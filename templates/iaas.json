@@ -1,0 +1,418 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique Parameter"
+      },
+      "defaultValue": "ccit"
+    },
+    "username": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "password": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "servicePrincipalAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "Service Principal App ID (also called Client ID) that has contributor rights to the subscription used for this deployment."
+      }
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/24"
+    },
+    "subnet1Prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/25"
+    },
+    "vm1Name": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "winbox"
+    },
+    "vm2Name": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "nxbox"
+    }
+  },
+  "variables": {
+    "KeyVaultName": "[concat(parameters('prefix'), '-kv')]",
+    "KeyVaultId": "[resourceId('Microsoft.KeyVault/vaults', variables('KeyVaultName'))]",
+    "VNetName": "vnet",
+    "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
+    "Subnet1Name": "subnet",
+    "SubNet1Id": "[concat(variables('VNetId'), '/subnets/', variables('Subnet1Name'))]",
+    "Nsg1Name": "[concat(variables('Subnet1Name'), '-nsg')]",
+    "Nsg1Id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsg1Name'))]",
+    "PublicIP1Name": "[concat(parameters('vm1Name'), '-ip')]",
+    "PublicIP1Id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP1Name'))]",
+    "PublicIP2Name": "[concat(parameters('vm2Name'), '-ip')]",
+    "PublicIP2Id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('PublicIP2Name'))]",
+    "Nic1Name": "[concat(parameters('vm1Name'), '-nic')]",
+    "Nic1Id": "[resourceId('Microsoft.Network/networkInterfaces', variables('Nic1Name'))]",
+    "Nic2Name": "[concat(parameters('vm2Name'), '-nic')]",
+    "Nic2Id": "[resourceId('Microsoft.Network/networkInterfaces', variables('Nic2Name'))]",
+    "storageName": "[toLower( concat( parameters('prefix'), uniqueString(resourceGroup().id) ) )]",
+    "storageId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
+    "vm1Id": "[resourceId('Microsoft.Compute/virtualMachines', parameters('vm1Name'))]"
+  },
+  "resources": [
+    {
+      "comments": "## Key Vault ##",
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[variables('KeyVaultName')]",
+      "apiVersion": "2015-06-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('servicePrincipalAppId')]",
+            "permissions": {
+              "keys": [
+                "all"
+              ],
+              "secrets": [
+                "all"
+              ]
+            }
+          }
+        ],
+        "enabledForDeployment": true,
+        "enabledForTemplateDeployment": true,
+        "enabledForVolumeEncryption": true
+      },
+      "resources": [
+        {
+          "type": "secrets",
+          "name": "username",
+          "apiVersion": "2015-06-01",
+          "properties": {
+            "value": "[parameters('username')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "password",
+          "apiVersion": "2015-06-01",
+          "properties": {
+            "value": "[parameters('password')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "WindowsVM Storage Account"
+      },
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "properties": {
+        "encryption": {
+          "keySource": "Microsoft.Storage",
+          "services": {
+            "blob": {
+              "enabled": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('vm1Name'), '-ip')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[concat(parameters('vm2Name'), '-ip')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "comments": "## Network Security Group ##",
+      "name": "[variables('nsg1Name')]",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Network Security Group"
+      },
+      "properties": {
+        "securityRules": [
+          {
+            "name": "ssh_rule",
+            "properties": {
+              "description": "Allow SSH",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "rdp_rule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "Internet",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Virtual Network ##",
+      "name": "[variables('VNetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('Nsg1Id')]"
+      ],
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('VNetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('Subnet1Name')]",
+            "properties": {
+              "addressPrefix": "[parameters('Subnet1Prefix')]",
+              "networkSecurityGroup": {
+                "id": "[variables('Nsg1Id')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('vm1Name'), '-nic')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('VNetId')]",
+        "[variables('PublicIP1Id')]"
+      ],
+      "tags": {
+        "displayName": "Network Interface"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('PublicIP1Id')]"
+              },
+              "subnet": {
+                "id": "[variables('SubNet1Id')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('vm2Name'), '-nic')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('PublicIP2Id')]",
+        "[variables('VNetId')]"
+      ],
+      "tags": {
+        "displayName": "Network Interface"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[variables('PublicIP2Id')]"
+              },
+              "subnet": {
+                "id": "[variables('SubNet1Id')]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Windows VM ##",
+      "apiVersion": "2016-04-30-preview",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('vm1Name')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[variables('storageId')]",
+        "[variables('nic1Id')]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "Standard_A2"
+        },
+        "osProfile": {
+          "computerName": "[parameters('vm1Name')]",
+          "adminUsername": "[parameters('username')]",
+          "adminPassword": "[parameters('password')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2012-R2-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[variables('Nic1Id')]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('http://', variables('storageName'), '.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "MyCustomScriptExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[variables('vm1Id')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "CustomScriptExtension",
+            "typeHandlerVersion": "1.7",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/scripts/customscript.ps1"
+              ],
+              "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File test.ps1"
+            }
+          }
+        },
+        {
+          "name": "DSCExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[variables('vm1Id')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": {
+                "MachineName": "[parameters('vm1Name')]"
+              }
+            }
+          }
+        },
+        {
+          "name": "BGInfoExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[variables('vm1Id')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "BGInfo",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {},
+            "protectedSettings": null
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {}
+}
