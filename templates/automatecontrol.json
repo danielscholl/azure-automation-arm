@@ -441,7 +441,8 @@
           "dependsOn": [
             "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
             "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmProfile.name)]",
-            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureStorage.name)]"
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureStorage.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmStorage.name)]"
           ],
           "properties": {
             "contentLink": {

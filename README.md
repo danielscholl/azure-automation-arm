@@ -25,19 +25,16 @@ Parameters (automatecontrol.params.json)
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fautomatecontrol.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
-<a href="http://armviz.io/#/?load=https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fautomatecontrol.json" target="_blank">
-    <img src="http://armviz.io/visualizebutton.png"/>
-</a>
 
 __Manual Deployment Instructions__
 
-1. Create a Resource Group
+1. __Create a Resource Group__
 
 ```bash
 az group create --location southcentralus --name automate-demo
 ```
 
-2. Deploy Template to Resource Group
+2. __Deploy Template to Resource Group__
 
 ```bash
 az group deployment create --resource-group automate-demo --template-file templates/automatecontrol.json --parameters templates/automatecontrol.params.json
@@ -48,16 +45,16 @@ az group deployment create --resource-group automate-demo --template-file templa
 
 The Automation and Control Solution deploys and configures the following items.
 
-1. Log Analytics OMS Workspace with Solutions
+1. __Log Analytics OMS Workspace with Solutions__
   - Security Solution
   - Agent Health Assesment
   - Change Tracking
   - Updates
   - Azure Activity
 
-2. Automation Account
+2. __Automation Account__
 
-3. Automation Account Modules
+3. __Automation Account Modules__
   - AzureRm.Profile - 3.3.1
   - Azure.Storage - 3.3.1
   - AzureRm.Storage - 3.3.1
@@ -71,14 +68,14 @@ The Automation and Control Solution deploys and configures the following items.
   - AzureRm.RecoveryServices - 4.3.1
   - AzureRm.Backup - 4.3.1
 
-4. Automation Account Variables
+4. __Automation Account Variables__
   - omsWorkspaceId
   - omsWorkspaceKey
   - azureSubscriptionId
   - omsRecoveryVault
   - omsResourceGroupName
 
-5. Automation Account Runbooks
+5. __Automation Account Runbooks__
   - start-machines
   - stop-machines
 
@@ -98,3 +95,24 @@ Parameters (iaas.params.json)
 The following cli command can be used to retrieve a service principal.
 
 `az ad user show --upn user@email.com --query objectId -otsv`
+
+
+### Setup
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fiaas.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
+
+__Manual Deployment Instructions__
+
+1. __Create a Resource Group__
+
+```bash
+az group create --location southcentralus --name iaas-demo
+```
+
+2. __Deploy Template to Resource Group__
+
+```bash
+az group deployment create --resource-group iaas-demo --template-file templates/iaas.json --parameters templates/iaas.params.json
+```
