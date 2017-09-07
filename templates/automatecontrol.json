@@ -60,6 +60,13 @@
       "metadata": {
         "description": "Enter your service admin password."
       }
+    },
+    "newGuid": {
+      "type": "string",
+      "defaultValue": "76348db6-5cfb-4c8c-b425-2045584f000",
+      "metadata": {
+        "description": "Unique GUID for the Job Schedule"
+      }
     }
   },
   "variables": {
@@ -145,6 +152,14 @@
       }
     },
     "runbooks": {
+      "bootstrap": {
+        "name": "bootstrap",
+        "version": "1.0.0.0",
+        "description": "Runbook to start servers",
+        "type": "PowerShell",
+        "Id": "",
+        "scheduleName": "bootstrapSchedule"
+      },
       "stopmachines": {
         "name": "stop-servers",
         "version": "1.0.0.0",
@@ -154,13 +169,6 @@
       },
       "startmachines": {
         "name": "start-servers",
-        "version": "1.0.0.0",
-        "description": "Runbook to start servers",
-        "type": "PowerShell",
-        "Id": ""
-      },
-      "bootstrap": {
-        "name": "bootstrap",
         "version": "1.0.0.0",
         "description": "Runbook to start servers",
         "type": "PowerShell",
@@ -395,9 +403,8 @@
           "tags": {},
           "properties": {
             "description": "Azure Automation Account Name",
-            "isEncrypted": 0,
             "type": "string",
-            "value": "[parameters('automationAccountName')]"
+            "value": "[concat('\"',parameters('automationAccountName'),'\"')]"
           }
         },
         {
@@ -428,7 +435,7 @@
         },
         {
           "name": "AzureCredentials",
-          "type": "Microsoft.Automation/automationAccounts/credentials",
+          "type": "credentials",
           "apiVersion": "2015-10-31",
           "dependsOn": [
             "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
@@ -436,8 +443,8 @@
           "tags": {},
           "properties": {
             "description": "Azure Subscription Credentials",
-            "password": "[parameters('adminUser')]",
-            "userName": "[parameters('adminPassword')]"
+            "userName": "[parameters('adminUser')]",
+            "password": "[parameters('adminPassword')]"
           }
         },
         {
@@ -708,6 +715,41 @@
               "version": "[variables('runbooks').bootstrap.version]"
             }
           }
+        },
+        {
+          "name": "[variables('runbooks').bootstrap.scheduleName]",
+          "type": "schedules",
+          "apiVersion": "2015-10-31",
+          "properties": {
+            "description": "Starts the bootstrap runbooks",
+            "expiryTime": "9999-12-31T15:59:00-08:00",
+            "isEnabled": true,
+            "frequency": "OneTime"
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'),'/runbooks/',variables('runbooks').bootstrap.name)]"
+          ]
+        },
+        {
+          "name": "[parameters('newGuid')]",
+          "type": "jobSchedules",
+          "apiVersion": "2015-10-31",
+          "location": "[parameters('automationRegion')]",
+          "tags": {},
+          "properties": {
+            "schedule": {
+              "name": "[variables('runbooks').bootstrap.scheduleName]"
+            },
+            "runbook": {
+              "name": "[variables('runbooks').bootstrap.name]"
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'),'/runbooks/',variables('runbooks').bootstrap.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'),'/schedules/',variables('runbooks').bootstrap.scheduleName)]"
+          ]
         }
       ]
     }
