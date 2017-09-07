@@ -44,7 +44,7 @@
     },
     "_assetLocation": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/",
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/runbooks/",
       "metadata": {
         "description": "Path of the template folder."
       }
@@ -133,6 +133,13 @@
         "name": "stop-servers",
         "version": "1.0.0.0",
         "description": "Runbook to stop servers",
+        "type": "PowerShell",
+        "Id": ""
+      },
+      "startmachines": {
+        "name": "start-servers",
+        "version": "1.0.0.0",
+        "description": "Runbook to start servers",
         "type": "PowerShell",
         "Id": ""
       }
@@ -585,6 +592,29 @@
             "publishContentLink": {
               "uri": "[concat(parameters('_assetLocation'),'stop-machines.ps1')]",
               "version": "[variables('runbooks').stopmachines.version]"
+            }
+          }
+        },
+        {
+          "name": "[variables('runbooks').startmachines.name]",
+          "type": "runbooks",
+          "apiVersion": "2015-10-31",
+          "location": "[parameters('automationRegion')]",
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmProfile.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmCompute.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmAutomation.name)]"
+          ],
+          "tags": {},
+          "properties": {
+            "runbookType": "[variables('runbooks').startmachines.type]",
+            "logProgress": "false",
+            "logVerbose": "false",
+            "description": "[variables('runbooks').startmachines.description]",
+            "publishContentLink": {
+              "uri": "[concat(parameters('_assetLocation'),'start-machines.ps1')]",
+              "version": "[variables('runbooks').startmachines.version]"
             }
           }
         }
