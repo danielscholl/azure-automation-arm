@@ -2,14 +2,14 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "omsWorkspaceRegion": {
-      "value": "East US"
-    },
     "automationAccountName": {
       "value": "automate"
     },
     "automationRegion": {
       "value": "South Central US"
+    },
+    "omsWorkspaceRegion": {
+      "value": "East US"
     },
     "_assetLocation": {
       "value": "https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/"
