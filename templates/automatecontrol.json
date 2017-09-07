@@ -48,6 +48,18 @@
       "metadata": {
         "description": "Path of the template folder."
       }
+    },
+    "adminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "Enter your service admin user, ex: serviceaccount@microsoft.com.  Must be owner on the subscription you're deploying to during template deployment."
+      }
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Enter your service admin password."
+      }
     }
   },
   "variables": {
@@ -126,6 +138,10 @@
       "azureRmBackup": {
         "name": "AzureRm.Backup",
         "url": "https://devopsgallerystorage.blob.core.windows.net/packages/azurerm.backup.3.3.1.nupkg"
+      },
+      "azureRmKeyVault": {
+        "name": "AzureRm.KeyVault",
+        "url": "https://devopsgallerystorage.blob.core.windows.net/packages/azurerm.keyvault.3.3.1.nupkg"
       }
     },
     "runbooks": {
@@ -138,6 +154,13 @@
       },
       "startmachines": {
         "name": "start-servers",
+        "version": "1.0.0.0",
+        "description": "Runbook to start servers",
+        "type": "PowerShell",
+        "Id": ""
+      },
+      "bootstrap": {
+        "name": "bootstrap",
         "version": "1.0.0.0",
         "description": "Runbook to start servers",
         "type": "PowerShell",
@@ -363,6 +386,21 @@
           }
         },
         {
+          "name": "automationAccountName",
+          "type": "variables",
+          "apiVersion": "2015-10-31",
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+          ],
+          "tags": {},
+          "properties": {
+            "description": "Azure Automation Account Name",
+            "isEncrypted": 0,
+            "type": "string",
+            "value": "[parameters('automationAccountName')]"
+          }
+        },
+        {
           "name": "omsRecoveryVault",
           "type": "variables",
           "apiVersion": "2015-10-31",
@@ -386,6 +424,20 @@
           "properties": {
             "description": "OMS Recovery Resource Group Name",
             "value": "[concat('\"',resourceGroup().name,'\"')]"
+          }
+        },
+        {
+          "name": "AzureCredentials",
+          "type": "Microsoft.Automation/automationAccounts/credentials",
+          "apiVersion": "2015-10-31",
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
+          ],
+          "tags": {},
+          "properties": {
+            "description": "Azure Subscription Credentials",
+            "password": "[parameters('adminUser')]",
+            "userName": "[parameters('adminPassword')]"
           }
         },
         {
@@ -574,6 +626,21 @@
           }
         },
         {
+          "name": "[variables('psModules').azureRmKeyVault.name]",
+          "type": "Modules",
+          "apiVersion": "2015-10-31",
+          "tags": {},
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmProfile.name)]"
+          ],
+          "properties": {
+            "contentLink": {
+              "uri": "[variables('psModules').azureRmKeyVault.url]"
+            }
+          }
+        },
+        {
           "name": "[variables('runbooks').stopmachines.name]",
           "type": "runbooks",
           "apiVersion": "2015-10-31",
@@ -616,6 +683,29 @@
             "publishContentLink": {
               "uri": "[concat(parameters('_assetLocation'),'start-machines.ps1')]",
               "version": "[variables('runbooks').startmachines.version]"
+            }
+          }
+        },
+        {
+          "name": "[variables('runbooks').bootstrap.name]",
+          "type": "runbooks",
+          "apiVersion": "2015-10-31",
+          "location": "[parameters('automationRegion')]",
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmProfile.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmCompute.name)]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'), '/Modules/', variables('psModules').azureRmAutomation.name)]"
+          ],
+          "tags": {},
+          "properties": {
+            "runbookType": "[variables('runbooks').bootstrap.type]",
+            "logProgress": "false",
+            "logVerbose": "false",
+            "description": "[variables('runbooks').bootstrap.description]",
+            "publishContentLink": {
+              "uri": "[concat(parameters('_assetLocation'),'bootstrap.ps1')]",
+              "version": "[variables('runbooks').bootstrap.version]"
             }
           }
         }

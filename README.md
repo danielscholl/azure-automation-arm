@@ -16,6 +16,8 @@ Parameters (automatecontrol.params.json)
 | `automationRegion`      | South Central US    | Azure Region for Automation to be located      |
 | `omsWorkspaceRegion`    | East US             | Azure Region for OMS to be located             |
 | `_assetLocation`        | * See Note Below    | Source Control Location for Runbooks           |
+| `adminUser`             | _None_              | Subscription Owner login name                  |
+| `adminPassword`         | _None_              | Subscription Owner login password              |
 
 > Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
 
@@ -67,6 +69,7 @@ The Automation and Control Solution deploys and configures the following items.
   - AzureRm.SiteRecovery - 4.3.1
   - AzureRm.RecoveryServices - 4.3.1
   - AzureRm.Backup - 4.3.1
+  - AzureRm.KeyVault = 3.3.1
 
 4. __Automation Account Variables__
   - omsWorkspaceId
