@@ -16,18 +16,25 @@
         "description": "ObjectId for User allowed KeyVault Secret Access. (az ad user show --upn user@email.com)"
       }
     },
-    "jumpserverUser": {
+    "adminUser": {
       "type": "string",
       "metadata": {
         "description": "Admin user account name."
       },
       "minLength": 3
     },
-    "jumpserverPassword": {
+    "adminPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Admin user account password."
       }
+    },
+    "publicSSHKeyData": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Linux Server Public SSH Key."
+      },
+      "defaultValue": "NOTPROVIDED"
     },
     "vnetPrefix": {
       "type": "string",
@@ -144,10 +151,13 @@
             "value": "[parameters('servicePrincipalAppId')]"
           },
           "adminUserName": {
-            "value": "[parameters('jumpserverUser')]"
+            "value": "[parameters('adminUser')]"
           },
           "adminPassword": {
-            "value": "[parameters('jumpserverPassword')]"
+            "value": "[parameters('adminPassword')]"
+          },
+          "publicSSHKeyData": {
+            "value": "[parameters('publicSSHKeyData')]"
           }
         }
       }

@@ -22,6 +22,14 @@
       "defaultValue": "azureuser",
       "minLength": 1
     },
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Linux servers admin user account password."
+      },
+      "defaultValue": "azureuser",
+      "minLength": 1
+    },
     "publicSSHKeyData": {
       "type": "securestring",
       "metadata": {
@@ -72,6 +80,17 @@
           "apiVersion": "2015-06-01",
           "properties": {
             "value": "[parameters('adminUserName')]"
+          },
+          "dependsOn": [
+            "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+          ]
+        },
+        {
+          "type": "secrets",
+          "name": "adminPassword",
+          "apiVersion": "2015-06-01",
+          "properties": {
+            "value": "[parameters('adminPassword')]"
           },
           "dependsOn": [
             "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
