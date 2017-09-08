@@ -108,32 +108,32 @@
             "computerNamePrefix": "[parameters('unique')]",
             "adminUsername": "[parameters('adminUsername')]",
             "adminPassword": "[parameters('adminPassword')]"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaceConfigurations": [
-            {
-              "name": "[concat(variables('vmssName'), '-nic')]",
-              "properties": {
-                "primary": true,
-                "ipConfigurations": [
-                  {
-                    "name": "ipconfig",
-                    "properties": {
-                      "subnet": {
-                        "id": "[parameters('subnetId')]"
-                      },
-                      "ApplicationGatewayBackendAddressPools": [
-                        {
-                          "id": "[parameters('bePoolId')]"
-                        }
-                      ]
+          },
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "[concat(variables('vmssName'), '-nic')]",
+                "properties": {
+                  "primary": true,
+                  "ipConfigurations": [
+                    {
+                      "name": "ipconfig",
+                      "properties": {
+                        "subnet": {
+                          "id": "[parameters('subnetId')]"
+                        },
+                        "ApplicationGatewayBackendAddressPools": [
+                          {
+                            "id": "[parameters('bePoolId')]"
+                          }
+                        ]
+                      }
                     }
-                  }
-                ]
+                  ]
+                }
               }
-            }
-          ]
+            ]
+          }
         }
       }
     }
