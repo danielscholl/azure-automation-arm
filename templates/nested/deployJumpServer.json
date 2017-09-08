@@ -48,10 +48,21 @@
       "metadata": {
         "description": "The Windows version for the VM."
       },
-      "defaultValue": "2012-R2-Datacenter",
+      "defaultValue": "2016-Datacenter",
       "allowedValues": [
-        "2012-R2-Datacenter"
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2016-Nano-Server",
+        "2016-Datacenter-with-Containers",
+        "2016-Datacenter"
       ]
+    },
+    "storageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Diagnostics Storage Account Name"
+      }
     }
   },
   "variables": {
@@ -101,6 +112,12 @@
         ],
         "networkSecurityGroup": {
           "id": "[parameters('nsgId')]"
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('http://', parameters('storageName'), '.blob.core.windows.net')]"
+          }
         }
       }
     },
@@ -143,7 +160,46 @@
             }
           ]
         }
-      }
+      },
+      "resources": [
+        {
+          "name": "DSCExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[parameters('vmName')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": {
+                "MachineName": "[parameters('vmName')]"
+              }
+            }
+          }
+        },
+        {
+          "name": "BGInfoExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[parameters('vmName')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "BGInfo",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {},
+            "protectedSettings": null
+          }
+        }
+      ]
     }
   ],
   "outputs": {}
