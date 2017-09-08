@@ -29,13 +29,6 @@
       },
       "defaultValue": "azureuser",
       "minLength": 1
-    },
-    "publicSSHKeyData": {
-      "type": "securestring",
-      "metadata": {
-        "description": "SSH public key to set on linux VM"
-      },
-      "defaultValue": "none"
     }
   },
   "variables": {
@@ -91,17 +84,6 @@
           "apiVersion": "2015-06-01",
           "properties": {
             "value": "[parameters('adminPassword')]"
-          },
-          "dependsOn": [
-            "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-          ]
-        },
-        {
-          "type": "secrets",
-          "name": "sshPublicKey",
-          "apiVersion": "2015-06-01",
-          "properties": {
-            "value": "[parameters('publicSSHKeyData')]"
           },
           "dependsOn": [
             "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"

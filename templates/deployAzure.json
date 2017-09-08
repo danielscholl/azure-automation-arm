@@ -215,9 +215,6 @@
           },
           "adminPassword": {
             "value": "[parameters('adminPassword')]"
-          },
-          "publicSSHKeyData": {
-            "value": "[parameters('publicSSHKeyData')]"
           }
         }
       }
