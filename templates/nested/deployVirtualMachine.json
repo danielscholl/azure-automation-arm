@@ -170,53 +170,52 @@
           }
         }
       },
-      "resources": [
-        {
-          "name": "[concat(parameters('vmName'), copyIndex(), '/DSCExtension')]",
-          "type": "extensions",
-          "apiVersion": "2016-04-30-preview",
-          "location": "[resourceGroup().location]",
-          "copy": {
-            "name": "extDSCloop",
-            "count": "[parameters('numberOfInstances')]"
-          },
-          "dependsOn": [
-            "virtualMachineLoop"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.19",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "Properties": {
-                "MachineName": "[parameters('vmName')]"
-              }
-            }
-          }
-        },
-        {
-          "name": "[concat(parameters('vmName'), copyIndex(), '/BGInfo')]",
-          "type": "extensions",
-          "apiVersion": "2016-04-30-preview",
-          "location": "[resourceGroup().location]",
-          "copy": {
-            "name": "extBGloop",
-            "count": "[parameters('numberOfInstances')]"
-          },
-          "dependsOn": [
-            "virtualMachineLoop"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Compute",
-            "type": "BGInfo",
-            "typeHandlerVersion": "2.1",
-            "autoUpgradeMinorVersion": true,
-            "settings": {},
-            "protectedSettings": null
+      "resources": []
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'), copyIndex(), '/BGInfo')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "extBGloop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "virtualMachineLoop"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "BGInfo",
+        "typeHandlerVersion": "2.1",
+        "autoUpgradeMinorVersion": true,
+        "settings": {},
+        "protectedSettings": null
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('vmName'), copyIndex(), '/DSCExtension')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "extDSCloop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "virtualMachineLoop"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.19",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "Properties": {
+            "MachineName": "[parameters('vmName')]"
           }
         }
-      ]
+      }
     }
   ],
   "outputs": {

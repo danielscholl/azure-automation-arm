@@ -267,7 +267,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-arm-nested/master/templates/nested/', 'deployLoadBalancer.json')]",
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployLoadBalancer.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -290,7 +290,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-arm-nested/master/templates/nested/', 'deployVirtualMachine.json')]",
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployVirtualMachine.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
