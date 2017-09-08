@@ -87,13 +87,28 @@ The Automation and Control Solution deploys and configures the following items.
 
 ### Prerequisite
 
-Parameters (iaas.params.json)
+Parameters (deployAzure.params.json)
 
-| Parameter               | Default             | Description                                |
-| ----------------------- | ------------------- | ------------------------------------------ |
-| `servicePrincipalAppId` | _None_              | Service Principal to access KeyVault       |
-| `username`              | _None_              | Default Servers Username                   |
-| `password`              | _None_              | Default Servers Password                   |
+| Parameter                 | Default             | Description                                |
+| ------------------------- | ------------------- | ------------------------------------------ |
+| `unique`                  | my                  | Your unique string (company prefix)        |
+| `servicePrincipalAppId`   | _None_              | Service Principal to access KeyVault       |
+| `adminUser`               | azureuser           | Default Servers Username                   |
+| `adminPassword`           | _None_              | Default Servers Password                   |
+| `vnetPrefix`              | 10.1.0.0/24         | Virtual Network Address Space              |
+| `frontPrefix`             | 10.1.0.0/25         | Front Subnet Address Space                 |
+| `backPrefix`              | 10.1.0.128/26       | Back Subnet Address Space                  |
+| `dmzPrefix`               | 10.1.0.192/28       | DMZ Subnet Address Space                   |
+| `managePrefix`            | 10.1.0.208/28       | Manage Subnet Address Space                |
+| `remoteAccessACL`         | Internet            | IP Segement to allow RDP/SSH Access From   |
+| `jumpserverName`          | jumpserver          | VM Name of JumpServer                      |
+| `jumpserverSize`          | Standard_A1         | VM Size of JumpServer                      |
+| `backendLoadBalanceIP`    | 10.1.0.132          | Static IP Address of Load Balancer         |
+| `backendServerNamePrefix` | vm-back             | Backend Virtual Machine Name               |
+| `backendServerSize`       | Standard_A1         | Backend Virtual Machine Size               |
+| `backendServerCount`      | 2                   | Number of Backend Servers (2-5)            |
+| `scaleSetServerSize`      | Standard_A1         | Virtual Machine ScaleSet Size              |
+| `scaleSetInstanceCount`   | 2                   | Number of Instances in VMSS                |
 
 The following cli command can be used to retrieve a service principal.
 
@@ -102,7 +117,7 @@ The following cli command can be used to retrieve a service principal.
 
 ### Setup
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fiaas.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2FdeployAzure.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
@@ -119,3 +134,57 @@ az group create --location southcentralus --name automate-demo-iaas
 ```bash
 az group deployment create --resource-group automate-demo-iaas --template-file templates/deployAzure.json --parameters templates/deployAzure.params.json
 ```
+
+### Infrastructure Solution Details
+
+The IaaS Solsution deploys and configures the following items.
+
+1. __Virtual Network__
+  - Subnet: front
+  - Subnet: back
+  - Subnet: dmz
+  - Subnet: manage
+
+2. __Network Security Groups__
+  - Subnet Firewall: front-nsg
+  - Subnet Firewall: back-nsg
+  - Subnet Firewall: dmz-nsg
+  - Subnet Firewall: manage-nsg
+  - JumpBox Machine Firewall: remote-access-nsg
+
+3. __Storage Account__
+  - Diagnostics Storage Account
+
+4. __Key Vault__
+  - Contains Default Admin Login Credentials
+
+5. __Load Balancer__
+  - Backend Load Balancer
+  - Static IP
+
+6. __Virtual Machines__
+  - JumpServer on Manage Subnet
+    - BGInfo Extension
+    - DSC Extension
+  - Public IP
+  - Multiple Backend Servers
+    - BGInfo Extension
+    - DSC Extension
+
+7. __App Gateway__
+  - Frontend Application Gateway
+  - WAF
+  - Public IP
+
+8. __Virtual Machine Scale Set__
+  - VMSS on Front Network
+    - BGInfo Extension
+    - DSC Extension
+
+
+
+## Architecture
+
+![[0]][0]
+
+[0]: ./media/Architecture.png "Architecture Diagram"
