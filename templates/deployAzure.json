@@ -208,10 +208,20 @@
             "value": "[parameters('jumpserverSize')]"
           },
           "adminUserName": {
-            "value": "[parameters('adminUser')]"
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
           },
           "adminPassword": {
-            "value": "[parameters('adminPassword')]"
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminPassword"
+            }
           }
         }
       }

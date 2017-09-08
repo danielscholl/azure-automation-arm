@@ -172,10 +172,24 @@
               "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "22",
-              "sourceAddressPrefix": "Internet",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
               "destinationAddressPrefix": "*",
               "access": "Allow",
               "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "rdp_rule",
+            "properties": {
+              "description": "Allow RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "[parameters('remoteAccessACL')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
               "direction": "Inbound"
             }
           }
