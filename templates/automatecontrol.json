@@ -63,7 +63,6 @@
     },
     "newGuid": {
       "type": "string",
-      "defaultValue": "76348db6-5cfb-4c8c-b425-2045584f000",
       "metadata": {
         "description": "Unique GUID for the Job Schedule"
       }
