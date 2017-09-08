@@ -13,6 +13,9 @@
     },
     "_assetLocation": {
       "value": "https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/"
+    },
+    "adminUser": {
+      "value": "user@email.com"
     }
   }
 }

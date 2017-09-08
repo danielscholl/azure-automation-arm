@@ -221,21 +221,21 @@ try {
 
     if ($KeyVaultName -ne $null) {
       Write-Output "Removing the Keyvault : ($($KeyVaultName))..."
-      #Remove-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Confirm:$False -Force
+      Remove-AzureRmKeyVault -VaultName $KeyVaultName -ResourceGroupName $ResourceGroupName -Confirm:$False -Force
     }
 
     $checkCredentials = Get-AzureRmAutomationCredential -Name "AzureCredentials" -automationAccountName $automationAccountName -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 
     if ($checkCredentials -ne $null) {
       Write-Output "Removing the Azure Credentials..."
-      #Remove-AzureRmAutomationCredential -Name "AzureCredentials" -automationAccountName $automationAccountName -ResourceGroupName $ResourceGroupName
+      Remove-AzureRmAutomationCredential -Name "AzureCredentials" -automationAccountName $automationAccountName -ResourceGroupName $ResourceGroupName
     }
 
     $checkScheduleBootstrap = Get-AzureRmAutomationSchedule -automationAccountName $automationAccountName -Name "startBootstrap" -ResourceGroupName $ResourceGroupName -ErrorAction SilentlyContinue
 
     if ($checkScheduleBootstrap -ne $null) {
       Write-Output "Removing Bootstrap Schedule..."
-      #Remove-AzureRmAutomationSchedule -Name "startBootstrap" -automationAccountName $automationAccountName -ResourceGroupName $ResourceGroupName -Force
+      Remove-AzureRmAutomationSchedule -Name "startBootstrap" -automationAccountName $automationAccountName -ResourceGroupName $ResourceGroupName -Force
     }
   }
   catch {
