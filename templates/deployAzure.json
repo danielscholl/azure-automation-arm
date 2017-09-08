@@ -264,6 +264,9 @@
           },
           "storageName": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
           }
         }
       }
