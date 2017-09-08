@@ -77,6 +77,21 @@
         "description": "Allow Remote Access IP (CIDR)"
       },
       "defaultValue": "Internet"
+    },
+    "jumpserverName": {
+      "type": "string",
+      "metadata": {
+        "description": "Server name."
+      },
+      "defaultValue": "jumpserver",
+      "minLength": 2
+    },
+    "jumpserverSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Server size."
+      },
+      "defaultValue": "Standard_A1"
     }
   },
   "variables": {},
@@ -161,6 +176,42 @@
           },
           "publicSSHKeyData": {
             "value": "[parameters('publicSSHKeyData')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateJumpServer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "TemplateKeyVault",
+        "TemplateVNet"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployJumpServer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet4Id]"
+          },
+          "nsgId": {
+            "value": "[reference('TemplateVNet').outputs.securityGroups.value.remoteAccessId]"
+          },
+          "vmName": {
+            "value": "[parameters('jumpserverName')]"
+          },
+          "vmSize": {
+            "value": "[parameters('jumpserverSize')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUser')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
           }
         }
       }
