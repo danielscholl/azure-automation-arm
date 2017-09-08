@@ -1,0 +1,236 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "subnetId": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet ID to associate VM to."
+      }
+    },
+    "loadbalancerId": {
+      "type": "string",
+      "metadata": {
+        "description": "Load Balancer Id to associate VM to."
+      }
+    },
+    "storageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Diagnostics Storage Account Name"
+      }
+    },
+    "numberOfInstances": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of VMs to deploy, limit 5 since this sample is using a single storage account"
+      },
+      "defaultValue": 2,
+      "minValue": 2,
+      "maxValue": 5
+    },
+    "vmName": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Machine 1 Server Name."
+      },
+      "defaultValue": "vm-back",
+      "minLength": 1
+    },
+    "vmSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The virtual machine server size."
+      },
+      "defaultValue": "Standard_A1"
+    },
+    "adminUserName": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account name."
+      },
+      "defaultValue": "azureuser",
+      "minLength": 1
+    },
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account password."
+      }
+    },
+    "WindowsOSVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Windows version for the VM."
+      },
+      "defaultValue": "2016-Datacenter",
+      "allowedValues": [
+        "2008-R2-SP1",
+        "2012-Datacenter",
+        "2012-R2-Datacenter",
+        "2016-Nano-Server",
+        "2016-Datacenter-with-Containers",
+        "2016-Datacenter"
+      ]
+    }
+  },
+  "variables": {
+    "AvailabilitySetName": "[concat(parameters('vmName'), '-as')]"
+  },
+  "resources": [
+    {
+      "comments": "## Availability Set ##",
+      "type": "Microsoft.Compute/availabilitySets",
+      "name": "[variables('AvailabilitySetName')]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "platformUpdateDomainCount": 5,
+        "platformFaultDomainCount": 2,
+        "managed": true
+      }
+    },
+    {
+      "comments": "## Network Interface ##",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[concat(parameters('vmName'), copyindex(), '-nic')]",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "tags": {},
+      "copy": {
+        "name": "nicLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[parameters('subnetId')]"
+              },
+              "loadBalancerBackendAddressPools": [
+                {
+                  "id": "[concat(parameters('loadbalancerId'), '/backendAddressPools/lbBackEnd')]"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Virtual Machine ##",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[concat(parameters('vmName'), copyIndex())]",
+      "apiVersion": "2016-04-30-preview",
+      "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "virtualMachineLoop",
+        "count": "[parameters('numberOfInstances')]"
+      },
+      "dependsOn": [
+        "nicLoop"
+      ],
+      "properties": {
+        "availabilitySet": {
+          "id": "[resourceId('Microsoft.Compute/availabilitySets', variables('availabilitySetName'))]"
+        },
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('vmName'), copyIndex())]",
+          "adminUsername": "[parameters('adminUserName')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[parameters('WindowsOSVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',concat(parameters('vmName'), copyindex(), '-nic'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('http://', parameters('storageName'), '.blob.core.windows.net')]"
+          }
+        }
+      },
+      "resources": [
+        {
+          "name": "[concat(parameters('vmName'), copyIndex(), '/DSCExtension')]",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "copy": {
+            "name": "extDSCloop",
+            "count": "[parameters('numberOfInstances')]"
+          },
+          "dependsOn": [
+            "virtualMachineLoop"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": {
+                "MachineName": "[parameters('vmName')]"
+              }
+            }
+          }
+        },
+        {
+          "name": "[concat(parameters('vmName'), copyIndex(), '/BGInfo')]",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "copy": {
+            "name": "extBGloop",
+            "count": "[parameters('numberOfInstances')]"
+          },
+          "dependsOn": [
+            "virtualMachineLoop"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "BGInfo",
+            "typeHandlerVersion": "2.1",
+            "autoUpgradeMinorVersion": true,
+            "settings": {},
+            "protectedSettings": null
+          }
+        }
+      ]
+    }
+  ],
+  "outputs": {
+    "availabilitySet": {
+      "type": "object",
+      "value": {
+        "name": "[variables('AvailabilitySetName')]"
+      }
+    },
+    "virtualMachine": {
+      "type": "object",
+      "value": {
+        "instanceCount": "[parameters('numberOfInstances')]"
+      }
+    }
+  }
+}

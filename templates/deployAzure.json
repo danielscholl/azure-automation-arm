@@ -98,7 +98,31 @@
       "metadata": {
         "description": "Static IP Address for the Load Balancer."
       },
-      "defaultValue": "10.1.0.130"
+      "defaultValue": "10.1.0.132"
+    },
+    "backendServerNamePrefix": {
+      "metadata": {
+        "description": "Backend Virtual Machine Name."
+      },
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "vm-back"
+    },
+    "backendServerSize": {
+      "metadata": {
+        "description": "Backend Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_A1"
+    },
+    "backendServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 2,
+      "minValue": 2,
+      "maxValue": 5
     }
   },
   "variables": {},
@@ -258,6 +282,54 @@
           }
         }
       }
+    },
+    {
+      "name": "TemplateVirtualMachine",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-arm-nested/master/templates/nested/', 'deployVirtualMachine.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet2Id]"
+          },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
+          "storageName": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "vmName": {
+            "value": "[parameters('backendServerNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('backendServerSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('backendServerCount')]"
+          },
+          "adminUserName": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
+          },
+          "adminPassword": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminPassword"
+            }
+          }
+        }
+      }
     }
   ],
   "outputs": {
@@ -280,6 +352,14 @@
     "keyVault": {
       "type": "object",
       "value": "[reference('TemplateKeyVault').outputs.keyVault.value]"
+    },
+    "availabilitySet": {
+      "type": "object",
+      "value": "[reference('TemplateVirtualMachine').outputs.availabilitySet.value]"
+    },
+    "virtualMachine": {
+      "type": "object",
+      "value": "[reference('TemplateVirtualMachine').outputs.virtualMachine.value]"
     }
   }
 }
