@@ -12,12 +12,12 @@ Parameters (automatecontrol.params.json)
 
 | Parameter               | Default             | Description                                    |
 | ----------------------- | ------------------- | ---------------------------------------------- |
-| `automationAccountName` | automate            | Azure Automation Account Name                  |
-| `automationRegion`      | South Central US    | Azure Region for Automation to be located      |
-| `omsWorkspaceRegion`    | East US             | Azure Region for OMS to be located             |
-| `_assetLocation`        | * See Note Below    | Source Control Location for Runbooks           |
-| `adminUser`             | _None_              | Subscription Owner login name                  |
-| `adminPassword`         | _None_              | Subscription Owner login password              |
+| _automationAccountName_ | automate            | Azure Automation Account Name                  |
+| _automationRegion_      | South Central US    | Azure Region for Automation to be located      |
+| _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
+| _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
+| _adminUser_             | _None_              | Subscription Owner login name                  |
+| _adminPassword_         | _None_              | Subscription Owner login password              |
 
 > Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
 
@@ -91,24 +91,24 @@ Parameters (deployAzure.params.json)
 
 | Parameter                 | Default             | Description                                |
 | ------------------------- | ------------------- | ------------------------------------------ |
-| `unique`                  | my                  | Your unique string (company prefix)        |
-| `servicePrincipalAppId`   | _None_              | Service Principal to access KeyVault       |
-| `adminUser`               | azureuser           | Default Servers Username                   |
-| `adminPassword`           | _None_              | Default Servers Password                   |
-| `vnetPrefix`              | 10.1.0.0/24         | Virtual Network Address Space              |
-| `frontPrefix`             | 10.1.0.0/25         | Front Subnet Address Space                 |
-| `backPrefix`              | 10.1.0.128/26       | Back Subnet Address Space                  |
-| `dmzPrefix`               | 10.1.0.192/28       | DMZ Subnet Address Space                   |
-| `managePrefix`            | 10.1.0.208/28       | Manage Subnet Address Space                |
-| `remoteAccessACL`         | Internet            | IP Segement to allow RDP/SSH Access From   |
-| `jumpserverName`          | jumpserver          | VM Name of JumpServer                      |
-| `jumpserverSize`          | Standard_A1         | VM Size of JumpServer                      |
-| `backendLoadBalanceIP`    | 10.1.0.132          | Static IP Address of Load Balancer         |
-| `backendServerNamePrefix` | vm-back             | Backend Virtual Machine Name               |
-| `backendServerSize`       | Standard_A1         | Backend Virtual Machine Size               |
-| `backendServerCount`      | 2                   | Number of Backend Servers (2-5)            |
-| `scaleSetServerSize`      | Standard_A1         | Virtual Machine ScaleSet Size              |
-| `scaleSetInstanceCount`   | 2                   | Number of Instances in VMSS                |
+| _unique_                  | my                  | Your unique string (company prefix)        |
+| _servicePrincipalAppId_   | _None_              | Service Principal to access KeyVault       |
+| _adminUser_               | azureuser           | Default Servers Username                   |
+| _adminPassword_           | _None_              | Default Servers Password                   |
+| _vnetPrefix_              | 10.1.0.0/24         | Virtual Network Address Space              |
+| _frontPrefix_             | 10.1.0.0/25         | Front Subnet Address Space                 |
+| _backPrefix_              | 10.1.0.128/26       | Back Subnet Address Space                  |
+| _dmzPrefix_               | 10.1.0.192/28       | DMZ Subnet Address Space                   |
+| _managePrefix_            | 10.1.0.208/28       | Manage Subnet Address Space                |
+| _remoteAccessACL_         | Internet            | IP Segement to allow RDP/SSH Access From   |
+| _jumpserverName_          | jumpserver          | VM Name of JumpServer                      |
+| _jumpserverSize_          | Standard_A1         | VM Size of JumpServer                      |
+| _backendLoadBalanceIP_    | 10.1.0.132          | Static IP Address of Load Balancer         |
+| _backendServerNamePrefix_ | vm-back             | Backend Virtual Machine Name               |
+| _backendServerSize_       | Standard_A1         | Backend Virtual Machine Size               |
+| _backendServerCount_      | 2                   | Number of Backend Servers (2-5)            |
+| _scaleSetServerSize_      | Standard_A1         | Virtual Machine ScaleSet Size              |
+| _scaleSetInstanceCount_   | 2                   | Number of Instances in VMSS                |
 
 The following cli command can be used to retrieve a service principal.
 
