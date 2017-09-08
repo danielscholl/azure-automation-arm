@@ -234,6 +234,10 @@
       "name": "[concat(parameters('vmName'), copyIndex(), '/Diagnostics')]",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
+      "copy": {
+        "name": "extDiagloop",
+        "count": "[parameters('numberOfInstances')]"
+      },
       "dependsOn": [
         "[parameters('vmName')]"
       ],
