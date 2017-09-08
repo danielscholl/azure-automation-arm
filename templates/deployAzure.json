@@ -407,6 +407,9 @@
           },
           "instanceCount": {
             "value": "[parameters('scaleSetInstanceCount')]"
+          },
+          "storageName": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
           }
         }
       }

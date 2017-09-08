@@ -63,6 +63,12 @@
         "2016-Datacenter-with-Containers",
         "2016-Datacenter"
       ]
+    },
+    "storageName": {
+      "type": "string",
+      "metadata": {
+        "description": "Diagnostics Storage Account Name"
+      }
     }
   },
   "variables": {
@@ -130,6 +136,30 @@
                       }
                     }
                   ]
+                }
+              }
+            ]
+          },
+          "diagnosticsProfile": {
+            "bootDiagnostics": {
+              "enabled": true,
+              "storageUri": "[concat('http://', parameters('storageName'), '.blob.core.windows.net')]"
+            }
+          },
+          "extensionProfile": {
+            "extensions": [
+              {
+                "name": "BGInfoExtension",
+                "type": "extensions",
+                "apiVersion": "2016-04-30-preview",
+                "location": "[resourceGroup().location]",
+                "properties": {
+                  "publisher": "Microsoft.Compute",
+                  "type": "BGInfo",
+                  "typeHandlerVersion": "2.1",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {},
+                  "protectedSettings": null
                 }
               }
             ]
