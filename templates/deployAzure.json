@@ -7,6 +7,7 @@
       "metadata": {
         "description": "Small unique string."
       },
+      "defaultValue": "my",
       "minLength": 2,
       "maxLength": 5
     },
@@ -21,20 +22,15 @@
       "metadata": {
         "description": "Admin user account name."
       },
+      "defaultValue": "azureuser",
       "minLength": 3
     },
     "adminPassword": {
       "type": "securestring",
       "metadata": {
         "description": "Admin user account password."
-      }
-    },
-    "publicSSHKeyData": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Linux Server Public SSH Key."
       },
-      "defaultValue": "NOTPROVIDED"
+      "minLength": 9
     },
     "vnetPrefix": {
       "type": "string",
