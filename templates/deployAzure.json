@@ -1,0 +1,178 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "unique": {
+      "type": "string",
+      "metadata": {
+        "description": "Small unique string."
+      },
+      "minLength": 2,
+      "maxLength": 5
+    },
+    "servicePrincipalAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "ObjectId for User allowed KeyVault Secret Access. (az ad user show --upn user@email.com)"
+      }
+    },
+    "jumpserverUser": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account name."
+      },
+      "minLength": 3
+    },
+    "jumpserverPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin user account password."
+      }
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.2.0.0/24"
+    },
+    "frontPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.2.0.0/25"
+    },
+    "backPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 2 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.2.0.128/26"
+    },
+    "dmzPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 3 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.2.0.192/28"
+    },
+    "managePrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 4 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.2.0.208/28"
+    },
+    "remoteAccessACL": {
+      "type": "string",
+      "metadata": {
+        "description": "Allow Remote Access IP (CIDR)"
+      },
+      "defaultValue": "Internet"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "TemplateVNet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/', 'nested/deployVNet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "vnetPrefix": {
+            "value": "[parameters('vnetPrefix')]"
+          },
+          "subnet1Prefix": {
+            "value": "[parameters('frontPrefix')]"
+          },
+          "subnet2Prefix": {
+            "value": "[parameters('backPrefix')]"
+          },
+          "subnet3Prefix": {
+            "value": "[parameters('dmzPrefix')]"
+          },
+          "subnet4Prefix": {
+            "value": "[parameters('managePrefix')]"
+          },
+          "remoteAccessACL": {
+            "value": "[parameters('remoteAccessACL')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateStorage",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployStorageAccount.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "storageAccountType": {
+            "value": "Standard_LRS"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateKeyVault",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployKeyVault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "servicePrincipalAppId": {
+            "value": "[parameters('servicePrincipalAppId')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('jumpserverUser')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('jumpserverPassword')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "virtualNetwork": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.virtualNetwork.value]"
+    },
+    "subnets": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.subnets.value]"
+    },
+    "securityGroups": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.securityGroups.value]"
+    },
+    "storageAccount": {
+      "type": "object",
+      "value": "[reference('TemplateStorage').outputs.storageAccount.value]"
+    },
+    "keyVault": {
+      "type": "object",
+      "value": "[reference('TemplateKeyVault').outputs.keyVault.value]"
+    }
+  }
+}

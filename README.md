@@ -111,11 +111,11 @@ __Manual Deployment Instructions__
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name iaas-demo
+az group create --location southcentralus --name automate-demo-iaas
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --resource-group iaas-demo --template-file templates/iaas.json --parameters templates/iaas.params.json
+az group deployment create --resource-group automate-demo-iaas --template-file templates/deployAzure.json --parameters templates/deployAzure.params.json
 ```
