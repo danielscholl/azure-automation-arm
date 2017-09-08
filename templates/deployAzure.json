@@ -127,6 +127,9 @@
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
           "storageAccountType": {
             "value": "Standard_LRS"
           }
