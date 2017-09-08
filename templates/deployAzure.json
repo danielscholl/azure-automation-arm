@@ -92,6 +92,13 @@
         "description": "Server size."
       },
       "defaultValue": "Standard_A1"
+    },
+    "backendLoadBalanceIP": {
+      "type": "string",
+      "metadata": {
+        "description": "Static IP Address for the Load Balancer."
+      },
+      "defaultValue": "10.1.0.130"
     }
   },
   "variables": {},
@@ -225,6 +232,29 @@
           },
           "storageName": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLoadBalancer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-arm-nested/master/templates/nested/', 'deployLoadBalancer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet2Id]"
+          },
+          "staticIpAddress": {
+            "value": "[parameters('backendLoadBalanceIP')]"
           }
         }
       }

@@ -159,6 +159,12 @@
               "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('NicName'))]"
             }
           ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('http://', parameters('storageName'), '.blob.core.windows.net')]"
+          }
         }
       },
       "resources": [
