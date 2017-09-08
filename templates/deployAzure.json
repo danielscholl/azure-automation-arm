@@ -37,35 +37,35 @@
       "metadata": {
         "description": "Virtual Network Address Prefix (CIDR)"
       },
-      "defaultValue": "10.2.0.0/24"
+      "defaultValue": "10.1.0.0/24"
     },
     "frontPrefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 1 Address Prefix (CIDR)"
       },
-      "defaultValue": "10.2.0.0/25"
+      "defaultValue": "10.1.0.0/25"
     },
     "backPrefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 2 Address Prefix (CIDR)"
       },
-      "defaultValue": "10.2.0.128/26"
+      "defaultValue": "10.1.0.128/26"
     },
     "dmzPrefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 3 Address Prefix (CIDR)"
       },
-      "defaultValue": "10.2.0.192/28"
+      "defaultValue": "10.1.0.192/28"
     },
     "managePrefix": {
       "type": "string",
       "metadata": {
         "description": "Subnet 4 Address Prefix (CIDR)"
       },
-      "defaultValue": "10.2.0.208/28"
+      "defaultValue": "10.1.0.208/28"
     },
     "remoteAccessACL": {
       "type": "string",
