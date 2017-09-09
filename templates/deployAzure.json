@@ -442,6 +442,10 @@
     "virtualMachine": {
       "type": "object",
       "value": "[reference('TemplateVirtualMachine').outputs.virtualMachine.value]"
+    },
+    "appGateway": {
+      "type": "object",
+      "value": "[reference('TemplateAppGateway').outputs.appGateway.value]"
     }
   }
 }
