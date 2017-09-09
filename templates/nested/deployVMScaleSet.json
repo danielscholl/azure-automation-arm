@@ -167,16 +167,9 @@
                   "typeHandlerVersion": "2.19",
                   "autoUpgradeMinorVersion": true,
                   "settings": {
-                    "Properties": [
-                      {
-                        "Name": "RegistrationKey",
-                        "Value": {
-                          "UserName": "PLACEHOLDER_DONOTUSE",
-                          "Password": "PrivateSettingsRef:registrationKeyPrivate"
-                        },
-                        "TypeName": "System.Management.Automation.PSCredential"
-                      }
-                    ]
+                    "Properties": {
+                      "MachineName": "[variables('VMSSName')]"
+                    }
                   }
                 }
               }
