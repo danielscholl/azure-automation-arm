@@ -231,7 +231,7 @@
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
-      "name": "[concat(parameters('vmName'), copyIndex(), '/Diagnostics')]",
+      "name": "[concat(parameters('vmName'), copyIndex(), '/DiagExtension')]",
       "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
       "copy": {
@@ -239,7 +239,7 @@
         "count": "[parameters('numberOfInstances')]"
       },
       "dependsOn": [
-        "[parameters('vmName')]"
+        "virtualMachineLoop"
       ],
       "tags": {
         "displayName": "AzureDiagnostics"
