@@ -93,6 +93,8 @@ Parameters (deployAzure.params.json)
 | ------------------------- | ------------------- | ------------------------------------------ |
 | _unique_                  | my                  | Your unique string (company prefix)        |
 | _servicePrincipalAppId_   | _None_              | Service Principal to access KeyVault       |
+| _omsId_                   | _None_              | OMS Workspace Id                           |
+| _omsKey_                  | _None_              | OMS Workspace Key                          |
 | _adminUser_               | azureuser           | Default Servers Username                   |
 | _adminPassword_           | _None_              | Default Servers Password                   |
 | _vnetPrefix_              | 10.1.0.0/24         | Virtual Network Address Space              |
@@ -110,10 +112,16 @@ Parameters (deployAzure.params.json)
 | _scaleSetServerSize_      | Standard_A1         | Virtual Machine ScaleSet Size              |
 | _scaleSetInstanceCount_   | 2                   | Number of Instances in VMSS                |
 
+
 The following cli command can be used to retrieve a service principal.
 
 `az ad user show --upn user@email.com --query objectId -otsv`
 
+To get the OMS Workspace Id and Key the portal must be used.
+
+1. Go to the Microsoft Operations Management Suite
+  - Connected Sources
+  - Windows SErvers
 
 ### Setup
 
@@ -166,10 +174,14 @@ The IaaS Solsution deploys and configures the following items.
   - JumpServer on Manage Subnet
     - BGInfo Extension
     - DSC Extension
+    - Diagnostics Extension
+    - OMS Extension
   - Public IP
   - Multiple Backend Servers
     - BGInfo Extension
     - DSC Extension
+    - Diagnostics Extension
+    - OMS Extension
 
 7. __App Gateway__
   - Frontend Application Gateway
@@ -180,6 +192,8 @@ The IaaS Solsution deploys and configures the following items.
   - VMSS on Front Network
     - BGInfo Extension
     - DSC Extension
+    - Diagnostics Extension
+    - OMS Extension
 
 
 

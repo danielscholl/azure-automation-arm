@@ -69,6 +69,18 @@
       "metadata": {
         "description": "Diagnostics Storage Account Key"
       }
+    },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
     }
   },
   "variables": {
@@ -181,7 +193,7 @@
       },
       "resources": [
         {
-          "name": "DSCExtension",
+          "name": ".Microsoft.Powershell.DSCExtension",
           "type": "extensions",
           "apiVersion": "2016-04-30-preview",
           "location": "[resourceGroup().location]",
@@ -201,7 +213,7 @@
           }
         },
         {
-          "name": "BGInfoExtension",
+          "name": "Microsoft.Compute.BGInfoExtension",
           "type": "extensions",
           "apiVersion": "2016-04-30-preview",
           "location": "[resourceGroup().location]",
@@ -241,6 +253,27 @@
               "storageAccountName": "[parameters('storageName')]",
               "storageAccountKey": "[parameters('storageKey')]",
               "storageAccountEndPoint": "https://core.windows.net"
+            }
+          }
+        },
+        {
+          "name": "Microsoft.EnterpriseCloud.Monitoring.OMSExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[parameters('vmName')]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+            "type": "MicrosoftMonitoringAgent",
+            "typeHandlerVersion": "1.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "workspaceId": "myWorkSpaceId"
+            },
+            "protectedSettings": {
+              "workspaceKey": "myWorkspaceKey"
             }
           }
         }

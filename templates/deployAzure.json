@@ -17,6 +17,18 @@
         "description": "ObjectId for User allowed KeyVault Secret Access. (az ad user show --upn user@email.com)"
       }
     },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
+    },
     "adminUser": {
       "type": "string",
       "metadata": {
@@ -267,6 +279,12 @@
           },
           "storageKey": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "omsId": {
+            "value": "[parameters('omsId')]"
+          },
+          "omsKey": {
+            "value": "[parameters('omsKey')]"
           }
         }
       }
