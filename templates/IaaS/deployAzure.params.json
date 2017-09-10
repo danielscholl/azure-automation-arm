@@ -1,0 +1,39 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePrincipalAppId": {
+      "value": "023f1a22-5692-4453-a0f3-8b3ef0d7b6eb"
+    },
+    "adminUser": {
+      "value": "daniel"
+    },
+    "adminPassword": {
+      "value": "Cloudcodeit1!"
+    },
+    "vnetPrefix": {
+      "value": "10.1.0.0/24"
+    },
+    "frontPrefix": {
+      "value": "10.1.0.0/25"
+    },
+    "backPrefix": {
+      "value": "10.1.0.128/26"
+    },
+    "dmzPrefix": {
+      "value": "10.1.0.192/28"
+    },
+    "managePrefix": {
+      "value": "10.1.0.208/28"
+    },
+    "remoteAccessACL": {
+      "value": "Internet"
+    },
+    "omsId": {
+      "value": "298d3702-c170-4f36-9cfe-7852ecb26538"
+    },
+    "omsKey": {
+      "value": "/C0HBW5qxAJwCtJqnetXEcpPjWgzWpLQrM0F/yR2Eg2pSdilq+fCPNoDh12FP0Se3207YyaV4QQKgXcMhB8MVg=="
+    }
+  }
+}

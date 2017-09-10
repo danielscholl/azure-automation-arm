@@ -18,6 +18,8 @@ Parameters (automatecontrol.params.json)
 | _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
+| _jobGuid1_              | _None_              | Unique GUID to run an autoatmion job           |
+| _jobGuid2_              | _None_              | Unique GUID to run an autoatmion job           |
 
 > Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
 
@@ -39,7 +41,7 @@ az group create --location southcentralus --name automate-demo
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --resource-group automate-demo --template-file templates/automatecontrol.json --parameters templates/automatecontrol.params.json
+az group deployment create --resource-group automate-demo --template-file templates/deployAzure.json --parameters templates/deployAzure.params.json
 ```
 
 
@@ -125,7 +127,7 @@ To get the OMS Workspace Id and Key the portal must be used.
 
 ### Setup
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2FdeployAzure.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2FIaas%2FdeployAzure.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
@@ -140,7 +142,7 @@ az group create --location southcentralus --name automate-demo-iaas
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --resource-group automate-demo-iaas --template-file templates/deployAzure.json --parameters templates/deployAzure.params.json
+az group deployment create --resource-group automate-demo-iaas --template-file templates/IaaS/deployAzure.json --parameters templates/IaaS/deployAzure.params.json
 ```
 
 ### Infrastructure Solution Details

@@ -1,4 +1,4 @@
-Configuration MyWebConfig {
+Configuration MyServer {
 
   Import-DscResource -ModuleName PSDesiredStateConfiguration
 

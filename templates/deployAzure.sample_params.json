@@ -2,35 +2,20 @@
   "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
-    "unique": {
-      "value": "<company_prefix>"
+    "automationAccountName": {
+      "value": "automate"
     },
-    "servicePrincipalAppId": {
-      "value": "<your_user_principal>"
+    "automationRegion": {
+      "value": "South Central US"
+    },
+    "omsWorkspaceRegion": {
+      "value": "East US"
+    },
+    "_assetLocation": {
+      "value": "https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/"
     },
     "adminUser": {
-      "value": "azureuser"
-    },
-    "adminPassword": {
-      "value": "<your_password>"
-    },
-    "vnetPrefix": {
-      "value": "10.1.0.0/24"
-    },
-    "frontPrefix": {
-      "value": "10.1.0.0/25"
-    },
-    "backPrefix": {
-      "value": "10.1.0.128/26"
-    },
-    "dmzPrefix": {
-      "value": "10.1.0.192/28"
-    },
-    "managePrefix": {
-      "value": "10.1.0.208/28"
-    },
-    "remoteAccessACL": {
-      "value": "Internet"
+      "value": "user@email.com"
     }
   }
 }

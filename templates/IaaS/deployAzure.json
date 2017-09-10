@@ -1,0 +1,469 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "unique": {
+      "type": "string",
+      "metadata": {
+        "description": "Small unique string."
+      },
+      "defaultValue": "my",
+      "minLength": 2,
+      "maxLength": 5
+    },
+    "servicePrincipalAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "ObjectId for User allowed KeyVault Secret Access. (az ad user show --upn user@email.com)"
+      }
+    },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
+    },
+    "adminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account name."
+      },
+      "defaultValue": "azureuser",
+      "minLength": 3
+    },
+    "adminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Admin user account password."
+      },
+      "minLength": 9
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.1.0.0/24"
+    },
+    "frontPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.1.0.0/25"
+    },
+    "backPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 2 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.1.0.128/26"
+    },
+    "dmzPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 3 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.1.0.192/28"
+    },
+    "managePrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 4 Address Prefix (CIDR)"
+      },
+      "defaultValue": "10.1.0.208/28"
+    },
+    "remoteAccessACL": {
+      "type": "string",
+      "metadata": {
+        "description": "Allow Remote Access IP (CIDR)"
+      },
+      "defaultValue": "Internet"
+    },
+    "jumpserverName": {
+      "type": "string",
+      "metadata": {
+        "description": "Server name."
+      },
+      "defaultValue": "jumpserver",
+      "minLength": 2
+    },
+    "jumpserverSize": {
+      "type": "string",
+      "metadata": {
+        "description": "Server size."
+      },
+      "defaultValue": "Standard_A1"
+    },
+    "backendLoadBalanceIP": {
+      "type": "string",
+      "metadata": {
+        "description": "Static IP Address for the Load Balancer."
+      },
+      "defaultValue": "10.1.0.132"
+    },
+    "backendServerNamePrefix": {
+      "metadata": {
+        "description": "Backend Virtual Machine Name."
+      },
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "vm-back"
+    },
+    "backendServerSize": {
+      "metadata": {
+        "description": "Backend Virtual Machine Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_A1"
+    },
+    "backendServerCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of machines to deploy."
+      },
+      "defaultValue": 2,
+      "minValue": 2,
+      "maxValue": 5
+    },
+    "scaleSetServerSize": {
+      "metadata": {
+        "description": "Virtual Machine ScaleSet Size."
+      },
+      "type": "string",
+      "defaultValue": "Standard_A1"
+    },
+    "scaleSetInstanceCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of instances to deploy in the Scale Set."
+      },
+      "defaultValue": 2,
+      "minValue": 2
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "TemplateVNet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/', 'nested/deployVNet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "vnetPrefix": {
+            "value": "[parameters('vnetPrefix')]"
+          },
+          "subnet1Prefix": {
+            "value": "[parameters('frontPrefix')]"
+          },
+          "subnet2Prefix": {
+            "value": "[parameters('backPrefix')]"
+          },
+          "subnet3Prefix": {
+            "value": "[parameters('dmzPrefix')]"
+          },
+          "subnet4Prefix": {
+            "value": "[parameters('managePrefix')]"
+          },
+          "remoteAccessACL": {
+            "value": "[parameters('remoteAccessACL')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateStorage",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployStorageAccount.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "storageAccountType": {
+            "value": "Standard_LRS"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateKeyVault",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployKeyVault.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "servicePrincipalAppId": {
+            "value": "[parameters('servicePrincipalAppId')]"
+          },
+          "adminUserName": {
+            "value": "[parameters('adminUser')]"
+          },
+          "adminPassword": {
+            "value": "[parameters('adminPassword')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateJumpServer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "dependsOn": [
+        "TemplateKeyVault",
+        "TemplateVNet"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployJumpServer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet4Id]"
+          },
+          "nsgId": {
+            "value": "[reference('TemplateVNet').outputs.securityGroups.value.remoteAccessId]"
+          },
+          "vmName": {
+            "value": "[parameters('jumpserverName')]"
+          },
+          "vmSize": {
+            "value": "[parameters('jumpserverSize')]"
+          },
+          "adminUserName": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
+          },
+          "adminPassword": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminPassword"
+            }
+          },
+          "storageName": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "omsId": {
+            "value": "[parameters('omsId')]"
+          },
+          "omsKey": {
+            "value": "[parameters('omsKey')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateLoadBalancer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployLoadBalancer.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet2Id]"
+          },
+          "staticIpAddress": {
+            "value": "[parameters('backendLoadBalanceIP')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateVirtualMachine",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployVirtualMachine.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet2Id]"
+          },
+          "loadBalancerId": {
+            "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
+          },
+          "vmName": {
+            "value": "[parameters('backendServerNamePrefix')]"
+          },
+          "vmSize": {
+            "value": "[parameters('backendServerSize')]"
+          },
+          "numberOfInstances": {
+            "value": "[parameters('backendServerCount')]"
+          },
+          "adminUserName": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
+          },
+          "adminPassword": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminPassword"
+            }
+          },
+          "storageName": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          },
+          "storageKey": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateAppGateway",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployAppGateway.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet3Id]"
+          }
+        }
+      }
+    },
+    {
+      "name": "TemplateVMScaleSet",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/nested/', 'deployVMScaleSet.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "unique": {
+            "value": "[parameters('unique')]"
+          },
+          "subnetId": {
+            "value": "[reference('TemplateVNet').outputs.subnets.value.subnet1Id]"
+          },
+          "bePoolId": {
+            "value": "[reference('TemplateAppGateway').outputs.appGateway.value.bePoolId]"
+          },
+          "adminUserName": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminUserName"
+            }
+          },
+          "adminPassword": {
+            "reference": {
+              "keyVault": {
+                "id": "[reference('TemplateKeyVault').outputs.keyVault.value.id]"
+              },
+              "secretName": "adminPassword"
+            }
+          },
+          "vmSize": {
+            "value": "[parameters('scaleSetServerSize')]"
+          },
+          "instanceCount": {
+            "value": "[parameters('scaleSetInstanceCount')]"
+          },
+          "storageName": {
+            "value": "[reference('TemplateStorage').outputs.storageAccount.value.name]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "virtualNetwork": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.virtualNetwork.value]"
+    },
+    "subnets": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.subnets.value]"
+    },
+    "securityGroups": {
+      "type": "object",
+      "value": "[reference('TemplateVNet').outputs.securityGroups.value]"
+    },
+    "storageAccount": {
+      "type": "object",
+      "value": "[reference('TemplateStorage').outputs.storageAccount.value]"
+    },
+    "keyVault": {
+      "type": "object",
+      "value": "[reference('TemplateKeyVault').outputs.keyVault.value]"
+    },
+    "availabilitySet": {
+      "type": "object",
+      "value": "[reference('TemplateVirtualMachine').outputs.availabilitySet.value]"
+    },
+    "virtualMachine": {
+      "type": "object",
+      "value": "[reference('TemplateVirtualMachine').outputs.virtualMachine.value]"
+    },
+    "appGateway": {
+      "type": "object",
+      "value": "[reference('TemplateAppGateway').outputs.appGateway.value]"
+    }
+  }
+}
