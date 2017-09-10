@@ -359,6 +359,12 @@
           },
           "storageKey": {
             "value": "[reference('TemplateStorage').outputs.storageAccount.value.key]"
+          },
+          "omsId": {
+            "value": "[parameters('omsId')]"
+          },
+          "omsKey": {
+            "value": "[parameters('omsKey')]"
           }
         }
       }

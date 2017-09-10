@@ -20,8 +20,6 @@ Parameters (automatecontrol.params.json)
 | _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
-| _jobGuid1_              | _None_              | Unique GUID to run an autoatmion job           |
-| _jobGuid2_              | _None_              | Unique GUID to run an autoatmion job           |
 
 > Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
 
