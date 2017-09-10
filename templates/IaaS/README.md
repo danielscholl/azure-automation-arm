@@ -5,3 +5,33 @@
 </a>
 
 This template configures a complex IaaS deployment and registers it into the OMS Management System
+
+
+
+### Prerequisite
+
+Parameters (deployAzure.params.json)
+
+| Parameter                 | Default             | Description                                |
+| ------------------------- | ------------------- | ------------------------------------------ |
+| _servicePrincipalAppId_   | _None_              | Service Principal to access KeyVault       |
+| _omsId_                   | _None_              | OMS Workspace Id                           |
+| _omsKey_                  | _None_              | OMS Workspace Key                          |
+| _adminUser_               | azureuser           | Default Servers Username                   |
+| _adminPassword_           | _None_              | Default Servers Password                   |
+
+
+__Manual Deployment Instructions__
+
+1. __Create a Resource Group__
+
+```bash
+az group create --location southcentralus --name automate-IaaS
+```
+
+2. __Deploy Template to Resource Group__
+
+```bash
+az group deployment create --template-file templates/IaaS/deployAzure.json --parameters templates/IaaS/deployAzure.params.json --resource-group automate-IaaS
+```
+
