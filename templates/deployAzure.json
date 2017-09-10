@@ -179,6 +179,14 @@
         "type": "PowerShell",
         "Id": ""
       }
+    },
+    "configurations": {
+      "webserver": {
+        "name": "webrolefull",
+        "description": "Simple Web Server Setup",
+        "overwrite": "true",
+        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/webrolefull.ps1"
+      }
     }
   },
   "resources": [
@@ -757,40 +765,24 @@
           ]
         },
         {
-          "name": "MyServer.WebServer",
+          "name": "[variables('configurations').webserver.name]",
           "type": "Configurations",
           "apiVersion": "2015-10-31",
           "location": "[parameters('automationRegion')]",
           "tags": {},
-          "dependsOn": [
-            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]"
-          ],
           "properties": {
             "logVerbose": "false",
-            "description": "Web Server",
+            "description": "[variables('configurations').webserver.description]",
             "state": "Published",
-            "overwrite": "true",
+            "overwrite": "[variables('configurations').webserver.overwrite]",
             "Source": {
               "type": "uri",
-              "Value": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/website.ps1"
+              "Value": "[variables('configurations').webserver.uri]"
             }
-          }
-        },
-        {
-          "name": "[parameters('jobGuid2')]",
-          "type": "Compilationjobs",
-          "apiVersion": "2015-10-31",
-          "location": "[parameters('automationRegion')]",
-          "tags": {},
+          },
           "dependsOn": [
-            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'))]",
-            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'),'/Configurations/', 'MyServer.WebServer')]"
-          ],
-          "properties": {
-            "configuration": {
-              "name": "MyServer.WebServer"
-            }
-          }
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]"
+          ]
         }
       ]
     }

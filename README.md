@@ -6,6 +6,8 @@ This repository is a sample solution deploying IaaS supported by OMS Automation 
 
 ### Prerequisite
 
+<b>NOTE:</b> The arm template requires 6 specific settings:
+
 Create the required parameter file for deploying the Automation and Control Systems to the desired region.
 
 Parameters (automatecontrol.params.json)
@@ -22,6 +24,25 @@ Parameters (automatecontrol.params.json)
 | _jobGuid2_              | _None_              | Unique GUID to run an autoatmion job           |
 
 > Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
+
+
+<b>NOTE:</b> The arm template requires 2 unique job GUIDs
+
+| Parameter               | Default             | Description                                    |
+| ----------------------- | ------------------- | ---------------------------------------------- |
+| _jobGuid1_              | _None_              | Unique GUID to run an autoatmion job           |
+| _jobGuid2_              | _None_              | Unique GUID to run an autoatmion job           |
+
+GUIDs can be created several different ways.
+
+1. Online Genertor
+  `https://www.guidgenerator.com/online-guid-generator.aspx`
+
+2. Windows Powershell
+  `New-Guid`
+
+3. Mac or Linux
+  `alias uuid="python -c 'import sys,uuid; sys.stdout.write(uuid.uuid4().hex)' | pbcopy && pbpaste && echo"`
 
 
 ### Setup
