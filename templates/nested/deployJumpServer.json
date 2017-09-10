@@ -193,26 +193,6 @@
       },
       "resources": [
         {
-          "name": ".Microsoft.Powershell.DSCExtension",
-          "type": "extensions",
-          "apiVersion": "2016-04-30-preview",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[parameters('vmName')]"
-          ],
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.19",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "Properties": {
-                "MachineName": "[parameters('vmName')]"
-              }
-            }
-          }
-        },
-        {
           "name": "Microsoft.Compute.BGInfoExtension",
           "type": "extensions",
           "apiVersion": "2016-04-30-preview",
@@ -220,6 +200,9 @@
           "dependsOn": [
             "[parameters('vmName')]"
           ],
+          "tags": {
+            "displayName": "BGInfoExtension"
+          },
           "properties": {
             "publisher": "Microsoft.Compute",
             "type": "BGInfo",
@@ -264,16 +247,42 @@
           "dependsOn": [
             "[parameters('vmName')]"
           ],
+          "tags": {
+            "displayName": "OMSExtension"
+          },
           "properties": {
             "publisher": "Microsoft.EnterpriseCloud.Monitoring",
             "type": "MicrosoftMonitoringAgent",
             "typeHandlerVersion": "1.0",
             "autoUpgradeMinorVersion": true,
             "settings": {
-              "workspaceId": "myWorkSpaceId"
+              "workspaceId": "[parameters('omsId')]"
             },
             "protectedSettings": {
-              "workspaceKey": "myWorkspaceKey"
+              "workspaceKey": "[parameters('omsKey')]"
+            }
+          }
+        },
+        {
+          "name": "Microsoft.Powershell.DSCExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[parameters('vmName')]"
+          ],
+          "tags": {
+            "displayName": "DSCExtension"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.19",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Properties": {
+                "MachineName": "[parameters('vmName')]"
+              }
             }
           }
         }
