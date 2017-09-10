@@ -1,8 +1,8 @@
-Configuration Main {
+Configuration MyWebConfig {
 
   Import-DscResource -ModuleName PSDesiredStateConfiguration
 
-  Node "localhost"
+  Node "WebServer"
   {
 
     # Install the IIS role

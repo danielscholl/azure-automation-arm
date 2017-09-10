@@ -1,0 +1,45 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "value": "winbox"
+    },
+    "modulesUrl": {
+      "value": "https://github.com/danielscholl/azure-automation-arm/dsc/UpdateLCMforAAPull.zip"
+    },
+    "configurationFunction": {
+      "value": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull"
+    },
+    "registrationKey": {
+      "value": "lXoD2QOMDKfO9uxBkBtolgWOypJ1kACaXjO9+jXZEOPA6gai15yvRRODzMHCE7LN4Ga8VBXvyI7plG/zd9mjZw=="
+    },
+    "registrationUrl": {
+      "value": "https://scus-agentservice-prod-1.azure-automation.net/accounts/640b524a-9b0d-419f-a55e-9bbc8718ddf0"
+    },
+    "nodeConfigurationName": {
+      "value": "MyWebConfig.WebServer"
+    },
+    "configurationMode": {
+      "value": "ApplyAndMonitor"
+    },
+    "configurationModeFrequencyMins": {
+      "value": 15
+    },
+    "refreshFrequencyMins": {
+      "value": 30
+    },
+    "rebootNodeIfNeeded": {
+      "value": true
+    },
+    "actionAfterReboot": {
+      "value": "ContinueConfiguration"
+    },
+    "allowModuleOverwrite": {
+      "value": false
+    },
+    "timestamp": {
+      "value": "MM/dd/yyyy H:mm:ss tt"
+    }
+  }
+}
