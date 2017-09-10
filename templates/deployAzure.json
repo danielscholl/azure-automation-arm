@@ -783,6 +783,22 @@
           "dependsOn": [
             "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]"
           ]
+        },
+        {
+          "name": "[parameters('jobGuid1')]",
+          "type": "Compilationjobs",
+          "apiVersion": "2015-01-01-preview",
+          "location": "parameters('regionId')]",
+          "tags": {},
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'),'/Configurations/', variables('configurations').webserver.name)]"
+          ],
+          "properties": {
+            "configuration": {
+              "name": "[variables('configurations').webserver.name]"
+            }
+          }
         }
       ]
     }

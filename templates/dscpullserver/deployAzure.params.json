@@ -18,7 +18,7 @@
       "value": "https://scus-agentservice-prod-1.azure-automation.net/accounts/640b524a-9b0d-419f-a55e-9bbc8718ddf0"
     },
     "nodeConfigurationName": {
-      "value": "MyWebConfig.WebServer"
+      "value": "webrolefull.full"
     },
     "configurationMode": {
       "value": "ApplyAndMonitor"
