@@ -9,13 +9,13 @@
       },
       "defaultValue": "ccit"
     },
-    "username": {
+    "adminUser": {
       "type": "string",
       "metadata": {
         "description": ""
       }
     },
-    "password": {
+    "adminPassword": {
       "type": "string",
       "metadata": {
         "description": ""
@@ -65,7 +65,7 @@
     },
     "modulesUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/danielscholl/azure-automation-arm/dsc/UpdateLCMforAAPull.zip",
+      "defaultValue": "https://github.com/danielscholl/azure-automation-arm/raw/master/dsc/UpdateLCMforAAPull.zip",
       "metadata": {
         "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
       }
@@ -135,7 +135,7 @@
           "name": "username",
           "apiVersion": "2015-06-01",
           "properties": {
-            "value": "[parameters('username')]"
+            "value": "[parameters('adminUser')]"
           },
           "dependsOn": [
             "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
@@ -146,7 +146,7 @@
           "name": "password",
           "apiVersion": "2015-06-01",
           "properties": {
-            "value": "[parameters('password')]"
+            "value": "[parameters('adminPassword')]"
           },
           "dependsOn": [
             "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
@@ -349,8 +349,8 @@
         },
         "osProfile": {
           "computerName": "[parameters('vm1Name')]",
-          "adminUsername": "[parameters('username')]",
-          "adminPassword": "[parameters('password')]"
+          "adminUsername": "[parameters('adminUser')]",
+          "adminPassword": "[parameters('adminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
@@ -446,31 +446,6 @@
             },
             "protectedSettings": {
               "workspaceKey": "[parameters('omsKey')]"
-            }
-          }
-        },
-        {
-          "name": "Microsoft.Powershell.DSCExtension",
-          "type": "extensions",
-          "apiVersion": "2016-04-30-preview",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[variables('vm1Id')]"
-          ],
-          "tags": {
-            "displayName": "DSCExtension"
-          },
-          "properties": {
-            "publisher": "Microsoft.Powershell",
-            "type": "DSC",
-            "typeHandlerVersion": "2.19",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "ModulesUrl": "[parameters('modulesUrl')]",
-              "ConfigurationFunction": "[parameters('configurationFunction')]",
-              "Properties": {
-                "MachineName": "[parameters('vm1Name')]"
-              }
             }
           }
         }

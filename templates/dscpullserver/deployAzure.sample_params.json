@@ -6,7 +6,7 @@
       "value": "winbox"
     },
     "modulesUrl": {
-      "value": "https://github.com/danielscholl/azure-automation-arm/dsc/UpdateLCMforAAPull.zip"
+      "value": "https://github.com/danielscholl/azure-automation-arm/raw/master/dsc/UpdateLCMforAAPull.zip"
     },
     "configurationFunction": {
       "value": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull"

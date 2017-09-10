@@ -5,17 +5,17 @@
     "servicePrincipalAppId": {
       "value": "023f1a22-5692-4453-a0f3-8b3ef0d7b6eb"
     },
-    "username": {
-      "value": "daniel"
-    },
-    "password": {
-      "value": "Cloudcodeit1!"
-    },
     "omsId": {
       "value": "298d3702-c170-4f36-9cfe-7852ecb26538"
     },
     "omsKey": {
       "value": "/C0HBW5qxAJwCtJqnetXEcpPjWgzWpLQrM0F/yR2Eg2pSdilq+fCPNoDh12FP0Se3207YyaV4QQKgXcMhB8MVg=="
+    },
+    "adminUser": {
+      "value": "daniel"
+    },
+    "adminPassword": {
+      "value": "Cloudcodeit1!"
     }
   }
 }

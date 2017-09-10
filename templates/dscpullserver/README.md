@@ -24,10 +24,14 @@ This template configures an existing Virtual Machine Local Configuration Manager
 		   ...
            }
 
-These prerequisites are available only after successful creation and configuration of an Azure Automation Account for Azure Automation DSC.
+These prerequisites are available only after successful creation and configuration of an Azure Automation Account for Azure Automation DSC and a Virtual Machine.
 
-For more information on Azure Automation DSC (including more examples and usage), please see the following: <a href="http://aka.ms/DSCLearnMore" target="_blank">Azure Automation DSC Overview</a>
+__Manual Deployment Instructions__
 
-<b>DISCLAIMER:</b> This template does not create a new VM, it only includes what is necessary to create/update a DSC VM Extension for an existing VM. The contents of this template can be leveraged as part of a VM creation template, either by nesting, or copying/pasting the relevant template metadata.
+1. __Deploy Template to Resource Group__
 
-<b>Final Note:</b> A timestamp parameter is included in this template. It can be any unique string, but the current datetime, as a string, was chosen as an example. This is used to force the request to go through ARM even if all fields are the same as last ARM deployment of this template; example in parameters file is in MM/dd/yyyy H:mm:ss tt format.
+```bash
+az group deployment create --template-file templates/dscpullserver/deployAzure.json --parameters templates/dscpullserver/deployAzure.params.json --resource-group simpleIaaS
+```
+
+

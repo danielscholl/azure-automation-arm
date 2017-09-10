@@ -5,10 +5,16 @@
     "servicePrincipalAppId": {
       "value": "<your_service_principal>"
     },
-    "username": {
+    "omsId": {
+      "value": "<your_workspace_id>"
+    },
+    "omsKey": {
+      "value": "<your_workspace_key>"
+    },
+    "adminUser": {
       "value": "<your_username>"
     },
-    "password": {
+    "adminPassword": {
       "value": "<your_password>"
     }
   }
