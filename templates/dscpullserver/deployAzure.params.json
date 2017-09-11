@@ -12,13 +12,13 @@
       "value": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull"
     },
     "registrationKey": {
-      "value": "lXoD2QOMDKfO9uxBkBtolgWOypJ1kACaXjO9+jXZEOPA6gai15yvRRODzMHCE7LN4Ga8VBXvyI7plG/zd9mjZw=="
+      "value": ""
     },
     "registrationUrl": {
-      "value": "https://scus-agentservice-prod-1.azure-automation.net/accounts/640b524a-9b0d-419f-a55e-9bbc8718ddf0"
+      "value": ""
     },
     "nodeConfigurationName": {
-      "value": "webrolefull.full"
+      "value": ""
     },
     "configurationMode": {
       "value": "ApplyAndMonitor"

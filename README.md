@@ -10,7 +10,7 @@ This repository is a sample solution deploying IaaS supported by OMS Automation 
 
 Create the required parameter file for deploying the Automation and Control Systems to the desired region.
 
-Parameters (automatecontrol.params.json)
+Parameters (deployAzure.params.json)
 
 | Parameter               | Default             | Description                                    |
 | ----------------------- | ------------------- | ---------------------------------------------- |
@@ -28,8 +28,8 @@ Parameters (automatecontrol.params.json)
 
 | Parameter               | Default             | Description                                    |
 | ----------------------- | ------------------- | ---------------------------------------------- |
-| _jobGuid1_              | _None_              | Unique GUID to run an autoatmion job           |
-| _jobGuid2_              | _None_              | Unique GUID to run an autoatmion job           |
+| _jobGuid1_              | _None_              | Unique GUID to run an automation job           |
+| _jobGuid2_              | _None_              | Unique GUID to run an automation job           |
 
 GUIDs can be created several different ways.
 
@@ -103,6 +103,9 @@ The Automation and Control Solution deploys and configures the following items.
   - start-machines
   - stop-machines
 
+6. __Automation Account DSC__
+  - webrolefull
+
 
 ## IaaS Solution
 
@@ -166,7 +169,7 @@ az group deployment create --resource-group automate-demo-iaas --template-file t
 
 ### Infrastructure Solution Details
 
-The IaaS Solsution deploys and configures the following items.
+The IaaS Solution deploys and configures the following items.
 
 1. __Virtual Network__
   - Subnet: front
@@ -200,9 +203,9 @@ The IaaS Solsution deploys and configures the following items.
   - Public IP
   - Multiple Backend Servers
     - BGInfo Extension
-    - DSC Extension
     - Diagnostics Extension
-    - OMS Extension
+    - OMS Agent Configuration Extension
+    - DSC Extension
 
 7. __App Gateway__
   - Frontend Application Gateway
@@ -212,10 +215,10 @@ The IaaS Solsution deploys and configures the following items.
 8. __Virtual Machine Scale Set__
   - VMSS on Front Network
     - BGInfo Extension
-    - DSC Extension
     - Diagnostics Extension
-    - OMS Extension
-
+    - OMS Agent Configuration Extension
+    - DSC Extension
+    
 
 
 ## Architecture

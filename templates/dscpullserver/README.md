@@ -31,7 +31,7 @@ __Manual Deployment Instructions__
 1. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/dscpullserver/deployAzure.json --parameters templates/dscpullserver/deployAzure.params.json --resource-group simpleIaaS
+az group deployment create --template-file templates/dscpullserver/deployAzure.json --parameters templates/dscpullserver/deployAzure.params.json --resource-group automate-simpleIaaS
 ```
 
 

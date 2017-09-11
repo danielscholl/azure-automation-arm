@@ -1,2 +1,2 @@
 .certs
-templates/*.params.json
+templates/**/params.json

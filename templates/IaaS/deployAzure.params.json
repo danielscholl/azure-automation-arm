@@ -3,13 +3,13 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "servicePrincipalAppId": {
-      "value": "023f1a22-5692-4453-a0f3-8b3ef0d7b6eb"
+      "value": "<your_principal_id>"
     },
     "adminUser": {
-      "value": "daniel"
+      "value": "azureuser"
     },
     "adminPassword": {
-      "value": "Cloudcodeit1!"
+      "value": "<your_password>"
     },
     "vnetPrefix": {
       "value": "10.1.0.0/24"
@@ -30,10 +30,10 @@
       "value": "Internet"
     },
     "omsId": {
-      "value": "e4d99bce-a560-4c6f-9e8f-fa755fadbbcb"
+      "value": "<your_workspace_id>"
     },
     "omsKey": {
-      "value": "cbDZd39Lv1S5oEeyy0Ylug+GYxb1Z2JEp3aLms1O8hiPbkpdv47qliPo71v1WkR47RAxIckH8mXrbseAFHJ77w=="
+      "value": "<your_workspace_key>"
     }
   }
 }
