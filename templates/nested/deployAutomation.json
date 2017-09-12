@@ -358,9 +358,6 @@
       "type": "Microsoft.Automation/automationAccounts",
       "apiversion": "2015-10-31",
       "location": "[parameters('automationRegion')]",
-      "dependsOn": [
-        "TemplateGUIDs"
-      ],
       "comments": "Automation account for OMS",
       "properties": {
         "sku": {
