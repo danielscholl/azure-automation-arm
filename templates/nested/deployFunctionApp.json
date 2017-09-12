@@ -118,7 +118,7 @@
     "functionApp": {
       "type": "object",
       "value": {
-        "url": "[concat('https://', variables('functionAppName'), '/api/guidTemplate')]"
+        "url": "[concat('https://', variables('functionAppName'), '.azurewebsites.net', '/api/guidTemplate')]"
       }
     }
   }
