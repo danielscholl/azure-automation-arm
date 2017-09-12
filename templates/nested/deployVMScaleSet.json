@@ -69,6 +69,18 @@
       "metadata": {
         "description": "Diagnostics Storage Account Name"
       }
+    },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
     }
   },
   "variables": {
@@ -157,6 +169,21 @@
                   "autoUpgradeMinorVersion": true,
                   "settings": {},
                   "protectedSettings": null
+                }
+              },
+              {
+                "name": "OMSExtension",
+                "properties": {
+                  "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                  "type": "MicrosoftMonitoringAgent",
+                  "typeHandlerVersion": "1.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "workspaceId": "[parameters('omsId')]"
+                  },
+                  "protectedSettings": {
+                    "workspaceKey": "[parameters('omsKey')]"
+                  }
                 }
               },
               {

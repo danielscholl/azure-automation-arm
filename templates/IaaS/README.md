@@ -14,6 +14,7 @@ Parameters (deployAzure.params.json)
 
 | Parameter                 | Default             | Description                                |
 | ------------------------- | ------------------- | ------------------------------------------ |
+| _prefix_                  | my                  | Your unique string (company prefix)        |
 | _servicePrincipalAppId_   | _None_              | Service Principal to access KeyVault       |
 | _omsId_                   | _None_              | OMS Workspace Id                           |
 | _omsKey_                  | _None_              | OMS Workspace Key                          |
