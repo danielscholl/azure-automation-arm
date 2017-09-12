@@ -17,35 +17,48 @@ Parameters (deployAzure.params.json)
 | _automationAccountName_ | automate            | Azure Automation Account Name                  |
 | _automationRegion_      | South Central US    | Azure Region for Automation to be located      |
 | _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
-| _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
+| _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
+| _repoLocation_          | * See Note Below    | Source Control Location for Runbooks           |
 
-> Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
+
+<b>NOTE:</b>Runbooks that are uploaded to the automation account are from this repository but can be changed if necessary.
+ 
+ Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
 
 
-<b>NOTE:</b> The arm template requires 2 unique job GUIDs
+<b>NOTE:</b> This ARM template uses an Azure Function to create unique GUIDs neecessary for job automation.
 
-| Parameter               | Default             | Description                                    |
-| ----------------------- | ------------------- | ---------------------------------------------- |
-| _jobGuid1_              | _None_              | Unique GUID to run an automation job           |
-| _jobGuid2_              | _None_              | Unique GUID to run an automation job           |
+Repo Location:  https://github.com/danielscholl/azure-functions
 
-GUIDs can be created several different ways.
+In order to prevent having to submit a growing number of GUIDs via parameters, an Azure Function is utilized to
+creates a dynamic template with (x) number of GUIDs from a URL.
 
-1. Online Genertor
-  `https://www.guidgenerator.com/online-guid-generator.aspx`
-
-2. Windows Powershell
-  `New-Guid`
-
-3. Mac or Linux
-  `alias uuid="python -c 'import sys,uuid; sys.stdout.write(uuid.uuid4().hex)' | pbcopy && pbpaste && echo"`
-
+URL Example: https://<your_function_app>.azurewebsites.net/api/guidTemplate?count=2
+```json
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {},
+  "resources": [],
+  "outputs": {
+    "guid0": {
+      "type": "string",
+      "value": "33f8f633-03ed-4d7d-9111-69ea3bbcb655"
+    },
+    "guid1": {
+      "type": "string",
+      "value": "e3473867-e90f-4706-ae74-390384013641"
+    }
+  }
+}
+```
 
 ### Setup
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fautomatecontrol.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
@@ -60,7 +73,7 @@ az group create --location southcentralus --name automate-demo
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --resource-group automate-demo --template-file templates/deployAzure.json --parameters templates/deployAzure.params.json
+az group deployment create --template-file templates/azuredeploy.json --parameters templates/azuredeploy.parameters.json --resource-group automate-demo
 ```
 
 
@@ -149,7 +162,7 @@ To get the OMS Workspace Id and Key the portal must be used.
 
 ### Setup
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2FIaas%2FdeployAzure.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdanielscholl%2Fazure-automation-arm%2Fmaster%2Ftemplates%2FIaas%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
@@ -164,7 +177,7 @@ az group create --location southcentralus --name automate-demo-iaas
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --resource-group automate-demo-iaas --template-file templates/IaaS/deployAzure.json --parameters templates/IaaS/deployAzure.params.json
+az group deployment create --template-file templates/IaaS/azuredeploy.json --parameters templates/IaaS/azuredeploy.parameters.json --resource-group automate-demo-iaas
 ```
 
 ### Infrastructure Solution Details
