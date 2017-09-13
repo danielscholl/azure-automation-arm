@@ -146,7 +146,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat(reference('TemplateFunctionApp').outputs.functionApp.value.url, '?count=2')]",
+          "uri": "[concat(reference('TemplateFunctionApp').outputs.functionApp.value.url, '?count=5')]",
           "contentVersion": "1.0.0.0"
         }
       }
@@ -184,10 +184,13 @@
             "value": "[parameters('adminPassword')]"
           },
           "jobGuid1": {
-            "value": "[reference('MyGuids').outputs.guid0.value]"
+            "value": "[reference('MyGuids').outputs.guid1.value]"
           },
           "jobGuid2": {
-            "value": "[reference('MyGuids').outputs.guid1.value]"
+            "value": "[reference('MyGuids').outputs.guid2.value]"
+          },
+          "jobGuid3": {
+            "value": "[reference('MyGuids').outputs.guid3.value]"
           }
         }
       }

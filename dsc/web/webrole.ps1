@@ -1,4 +1,4 @@
-Configuration webrolefull {
+Configuration Frontend {
 
   $features = @(
     @{Name = "Web-Server"; Ensure = "Present"},
@@ -27,7 +27,7 @@ Configuration webrolefull {
     @{Name = "Web-Mgmt-Console"; Ensure = "Present"}
   )
 
-  node full {
+  node Web {
 
     foreach ($feature in $features) {
       WindowsFeature ($feature.Name) {

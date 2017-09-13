@@ -188,10 +188,10 @@
     },
     "configurations": {
       "webserver": {
-        "name": "webrolefull",
+        "name": "Frontend",
         "description": "Simple Web Server Setup",
         "overwrite": "true",
-        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/web/webrolefull.ps1"
+        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/web/webrole.ps1"
       },
       "dataserver": {
         "name": "Backend",
