@@ -72,6 +72,12 @@
       "metadata": {
         "description": "Unique GUID for the Job Schedule"
       }
+    },
+    "jobGuid3": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique GUID for the Job Schedule"
+      }
     }
   },
   "variables": {
@@ -185,7 +191,13 @@
         "name": "webrolefull",
         "description": "Simple Web Server Setup",
         "overwrite": "true",
-        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/webrolefull.ps1"
+        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/web/webrolefull.ps1"
+      },
+      "dataserver": {
+        "name": "Backend",
+        "description": "Database Server",
+        "overwrite": "true",
+        "uri": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/database/sqlrole.ps1"
       }
     }
   },
@@ -798,6 +810,42 @@
           "properties": {
             "configuration": {
               "name": "[variables('configurations').webserver.name]"
+            }
+          }
+        },
+        {
+          "name": "[variables('configurations').dataserver.name]",
+          "type": "Configurations",
+          "apiVersion": "2015-10-31",
+          "location": "[parameters('automationRegion')]",
+          "tags": {},
+          "properties": {
+            "logVerbose": "false",
+            "description": "[variables('configurations').dataserver.description]",
+            "state": "Published",
+            "overwrite": "[variables('configurations').dataserver.overwrite]",
+            "Source": {
+              "type": "uri",
+              "Value": "[variables('configurations').dataserver.uri]"
+            }
+          },
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]"
+          ]
+        },
+        {
+          "name": "[parameters('jobGuid3')]",
+          "type": "Compilationjobs",
+          "apiVersion": "2015-01-01-preview",
+          "location": "parameters('regionId')]",
+          "tags": {},
+          "dependsOn": [
+            "[concat('Microsoft.Automation/automationAccounts/',parameters('automationAccountName'))]",
+            "[concat('Microsoft.Automation/automationAccounts/', parameters('automationAccountName'),'/Configurations/', variables('configurations').dataserver.name)]"
+          ],
+          "properties": {
+            "configuration": {
+              "name": "[variables('configurations').dataserver.name]"
             }
           }
         }
