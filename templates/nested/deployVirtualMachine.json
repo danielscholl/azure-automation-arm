@@ -179,7 +179,21 @@
           },
           "osDisk": {
             "createOption": "FromImage"
-          }
+          },
+          "dataDisks": [
+            {
+              "name": "[concat(parameters('vmName'), copyIndex(), 'd1')]",
+              "diskSizeGB": 1023,
+              "lun": 0,
+              "createOption": "Empty"
+            },
+            {
+              "name": "[concat(parameters('vmName'), copyIndex(), 'd2')]",
+              "diskSizeGB": 1023,
+              "lun": 1,
+              "createOption": "Empty"
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
