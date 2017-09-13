@@ -19,13 +19,20 @@ Parameters (deployAzure.params.json)
 | _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
-| _assetLocation_         | * See Note Below    | Source Control Location for Runbooks           |
-| _repoLocation_          | * See Note Below    | Source Control Location for Runbooks           |
+| _assetLocation_         | * See Note 1 Below  | Source Control Location for Runbooks           |
+| _repoLocation_          | * See Note 2 Below  | Source Control Location for Runbooks           |
 
-
-<b>NOTE:</b>Runbooks that are uploaded to the automation account are from this repository but can be changed if necessary.
+<b>NOTE:</b> Runbooks are automatically uploaded from the directory runbooks.  The default location of this can be changed if desired. 
  
- Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/ 
+ Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/
+
+ ARM template creation of the "RunAs" Account isn't possible.  2 Solutions exist to solve this problem.
+
+ __Option 1__: The template automatically creates a schedule to run the runbook "bootstrap."  This uses Azure to run powershell
+ commands and creates a temporary Key Vault to generate a certificate that then is used for the RunAs account.  In order
+ to execute activities in the Azure Subscription a user/password with contributor rights to the subscription are temporarily stored as credentials in the automation account and deleted upon succesful completion of the runbook.  It is important to know however that if the credentials have 2 Factor Authentication requirements the Runbook job will fail.
+
+ __Option 2__: In order to manually create the Run As Account the script create-runas-account.ps1 can be run which will create the certificates on the local machine and then upload the certificates to the automation account.
 
 
 <b>NOTE:</b> This ARM template uses an Azure Function to create unique GUIDs neecessary for job automation.
