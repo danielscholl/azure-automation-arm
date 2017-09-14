@@ -31,7 +31,7 @@ Configuration Backend {
 		        New-VirtualDisk -FriendlyName "DataDisk" `
             -ResiliencySettingName Simple `
             -NumberOfColumns $disks.Count `
-            -UseMaximumSize �Interleave 256KB `
+            -UseMaximumSize -Interleave 256KB `
             -StoragePoolFriendlyName "VMStoragePool"
 
 		        # Format the disk using NTFS and mount it as the F: drive
