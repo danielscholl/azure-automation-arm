@@ -16,6 +16,15 @@
     },
     "adminPassword": {
       "value": "<your_admin_password>"
+    },
+    "registrationUrl": {
+      "value": "<your_dsc_pullserver_url>"
+    },
+    "registrationKey": {
+      "value": "<your_dsc_pullserver_key>"
+    },
+    "nodeConfigurationName": {
+      "value": "Backend.Database"
     }
   }
 }

@@ -69,6 +69,31 @@
       "metadata": {
         "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
       }
+    },
+    "registrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "registrationUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "nodeConfigurationName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node will be configured as"
+      }
+    },
+    "configurationFunction": {
+      "type": "string",
+      "defaultValue": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
+      "metadata": {
+        "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
+      }
     }
   },
   "variables": {
@@ -345,7 +370,7 @@
       ],
       "properties": {
         "hardwareProfile": {
-          "vmSize": "Standard_A2"
+          "vmSize": "Standard_DS1_v2"
         },
         "osProfile": {
           "computerName": "[parameters('vm1Name')]",
@@ -354,14 +379,37 @@
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "MicrosoftWindowsServer",
-            "offer": "WindowsServer",
-            "sku": "2012-R2-Datacenter",
+            "publisher": "MicrosoftSqlServer",
+            "offer": "SQL2016-WS2016",
+            "sku": "SQLDEV",
             "version": "latest"
           },
           "osDisk": {
-            "createOption": "FromImage"
-          }
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "name": "[concat(parameters('vm1Name'), '-d1')]",
+              "diskSizeGB": 250,
+              "lun": 0,
+              "createOption": "Empty",
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS"
+              }
+            },
+            {
+              "name": "[concat(parameters('vm1Name'), '-d2')]",
+              "diskSizeGB": 250,
+              "lun": 1,
+              "createOption": "Empty",
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS"
+              }
+            }
+          ]
         },
         "networkProfile": {
           "networkInterfaces": [
@@ -446,6 +494,85 @@
             },
             "protectedSettings": {
               "workspaceKey": "[parameters('omsKey')]"
+            }
+          }
+        },
+        {
+          "name": "Microsoft.Powershell.DSCExtension",
+          "type": "extensions",
+          "apiVersion": "2016-04-30-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[parameters('vm1Name')]"
+          ],
+          "tags": {
+            "displayName": "DSCExtension"
+          },
+          "properties": {
+            "publisher": "Microsoft.Powershell",
+            "type": "DSC",
+            "typeHandlerVersion": "2.9",
+            "autoUpgradeMinorVersion": true,
+            "forceUpdateTag": "1.0.0.0",
+            "protectedSettings": {
+              "Items": {
+                "registrationKeyPrivate": "[parameters('registrationKey')]"
+              }
+            },
+            "settings": {
+              "ModulesUrl": "[parameters('modulesUrl')]",
+              "SasToken": "",
+              "ConfigurationFunction": "[parameters('configurationFunction')]",
+              "Properties": [
+                {
+                  "Name": "RegistrationKey",
+                  "Value": {
+                    "UserName": "PLACEHOLDER_DONOTUSE",
+                    "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                  },
+                  "TypeName": "System.Management.Automation.PSCredential"
+                },
+                {
+                  "Name": "RegistrationUrl",
+                  "Value": "[parameters('registrationUrl')]",
+                  "TypeName": "System.String"
+                },
+                {
+                  "Name": "NodeConfigurationName",
+                  "Value": "[parameters('nodeConfigurationName')]",
+                  "TypeName": "System.String"
+                },
+                {
+                  "Name": "ConfigurationMode",
+                  "Value": "ApplyAndMonitor",
+                  "TypeName": "System.String"
+                },
+                {
+                  "Name": "ConfigurationModeFrequencyMins",
+                  "Value": "15",
+                  "TypeName": "System.Int32"
+                },
+                {
+                  "Name": "RefreshFrequencyMins",
+                  "Value": "30",
+                  "TypeName": "System.Int32"
+                },
+                {
+                  "Name": "RebootNodeIfNeeded",
+                  "Value": true,
+                  "TypeName": "System.Boolean"
+                },
+                {
+                  "Name": "ActionAfterReboot",
+                  "Value": "ContinueConfiguration",
+                  "TypeName": "System.String"
+                },
+                {
+                  "Name": "AllowModuleOverwrite",
+                  "Value": false,
+                  "TypeName": "System.Boolean"
+                }
+              ]
             }
           }
         }

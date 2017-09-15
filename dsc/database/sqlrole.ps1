@@ -20,7 +20,7 @@ Configuration Backend {
         if ($disks -ne $null) {
 		        # Create a new storage pool using all available disks
 		        New-StoragePool -FriendlyName "VMStoragePool" `
-            -StorageSubsystemFriendlyName "Storage Spaces*" `
+            -StorageSubsystemFriendlyName "Windows Storage*" `
             -PhysicalDisks (Get-PhysicalDisk -CanPool $True)
 
 		        # Return all disks in the new pool
