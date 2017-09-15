@@ -37,6 +37,15 @@
     },
     "omsKey": {
       "value": "<your_workspace_key>"
+    },
+    "dscRegistrationUrl": {
+      "value": "<your_dsc_pullserver_url>"
+    },
+    "dscRegistrationKey": {
+      "value": "<your_dsc_pullserver_key>"
+    },
+    "scaleSetNodeConfig": {
+      "value": "Frontend.Web"
     }
   }
 }

@@ -146,6 +146,25 @@
       },
       "defaultValue": 2,
       "minValue": 2
+    },
+    "dscRegistrationUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "dscRegistrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "scaleSetNodeConfig": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node will be configured as"
+      },
+      "defaultValue": "Frontend.Web"
     }
   },
   "variables": {},
@@ -365,6 +384,15 @@
           },
           "omsKey": {
             "value": "[parameters('omsKey')]"
+          },
+          "registrationUrl": {
+            "value": "[parameters('dscRegistrationUrl')]"
+          },
+          "registrationKey": {
+            "value": "[parameters('dscRegistrationKey')]"
+          },
+          "nodeConfigurationName": {
+            "value": "[parameters('scaleSetNodeConfig')]"
           }
         }
       }

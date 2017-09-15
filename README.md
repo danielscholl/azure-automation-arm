@@ -137,8 +137,6 @@ Parameters (deployAzure.params.json)
 | ------------------------- | ------------------- | ------------------------------------------ |
 | _prefix_                  | my                  | Your unique string (company prefix)        |
 | _servicePrincipalAppId_   | _None_              | Service Principal to access KeyVault       |
-| _omsId_                   | _None_              | OMS Workspace Id                           |
-| _omsKey_                  | _None_              | OMS Workspace Key                          |
 | _adminUser_               | azureuser           | Default Servers Username                   |
 | _adminPassword_           | _None_              | Default Servers Password                   |
 | _vnetPrefix_              | 10.1.0.0/24         | Virtual Network Address Space              |
@@ -155,7 +153,11 @@ Parameters (deployAzure.params.json)
 | _backendServerCount_      | 2                   | Number of Backend Servers (2-5)            |
 | _scaleSetServerSize_      | Standard_A1         | Virtual Machine ScaleSet Size              |
 | _scaleSetInstanceCount_   | 2                   | Number of Instances in VMSS                |
-
+| _omsId_                   | _None_              | OMS Workspace Id                           |
+| _omsKey_                  | _None_              | OMS Workspace Key                          |
+| _dscRegistrationUrl_      | _None_              | Automation Account DSC URL                 |
+| _dscRegistrationKey_      | _None_              | Automation Account Access Key              |
+| _scaleSetNodeConfig_      | FrontendWeb         | DSC Node Configuration Name                |
 
 The following cli command can be used to retrieve a service principal.
 
