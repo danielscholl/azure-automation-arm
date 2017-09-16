@@ -121,7 +121,7 @@
         "description": "Backend Virtual Machine Size."
       },
       "type": "string",
-      "defaultValue": "Standard_A1"
+      "defaultValue": "Standard_DS1_v2"
     },
     "backendServerCount": {
       "type": "int",

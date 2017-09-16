@@ -263,7 +263,7 @@
           "extensionProfile": {
             "extensions": [
               {
-                "name": "BGInfoExtension",
+                "name": "[concat(variables('vmssName'),'BGInfo')]",
                 "properties": {
                   "publisher": "Microsoft.Compute",
                   "type": "BGInfo",
