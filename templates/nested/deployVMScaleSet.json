@@ -88,29 +88,22 @@
         "description": "OMS Workspace Key"
       }
     },
-    "registrationKey": {
-      "type": "securestring",
-      "metadata": {
-        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
-      }
-    },
     "registrationUrl": {
       "type": "string",
       "metadata": {
         "description": "Registration url of the Azure Automation DSC pull/reporting server"
       }
     },
+    "registrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
     "nodeConfigurationName": {
       "type": "string",
       "metadata": {
         "description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node will be configured as"
-      }
-    },
-    "powershelldscUpdateTagVersion": {
-      "type": "string",
-      "defaultValue": "1.0",
-      "metadata": {
-        "description": "Version number of the DSC deployment. Changing this value on subsequent deployments will trigger the extension to run."
       }
     },
     "modulesUrl": {
@@ -125,57 +118,6 @@
       "defaultValue": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
       "metadata": {
         "description": "DSC configuration function to call. Should contain filename and function in format fileName.ps1\\configurationfunction"
-      }
-    },
-    "configurationMode": {
-      "type": "string",
-      "defaultValue": "ApplyAndMonitor",
-      "allowedValues": [
-        "ApplyOnly",
-        "ApplyAndMonitor",
-        "ApplyAndAutoCorrect"
-      ],
-      "metadata": {
-        "description": "DSC agent (LCM) configuration mode setting. ApplyOnly, ApplyAndMonitor, or ApplyAndAutoCorrect"
-      }
-    },
-    "configurationModeFrequencyMins": {
-      "type": "int",
-      "defaultValue": 15,
-      "metadata": {
-        "description": "DSC agent (LCM) configuration mode frequency setting, in minutes"
-      }
-    },
-    "refreshFrequencyMins": {
-      "type": "int",
-      "defaultValue": 30,
-      "metadata": {
-        "description": "DSC agent (LCM) refresh frequency setting, in minutes"
-      }
-    },
-    "rebootNodeIfNeeded": {
-      "type": "bool",
-      "defaultValue": true,
-      "metadata": {
-        "description": "DSC agent (LCM) rebootNodeIfNeeded setting"
-      }
-    },
-    "actionAfterReboot": {
-      "type": "string",
-      "defaultValue": "ContinueConfiguration",
-      "allowedValues": [
-        "ContinueConfiguration",
-        "StopConfiguration"
-      ],
-      "metadata": {
-        "description": "DSC agent (LCM) actionAfterReboot setting. ContinueConfiguration or StopConfiguration"
-      }
-    },
-    "allowModuleOverwrite": {
-      "type": "bool",
-      "defaultValue": false,
-      "metadata": {
-        "description": "DSC agent (LCM) allowModuleOverwrite setting"
       }
     }
   },
@@ -304,6 +246,76 @@
                     "storageAccount": "[parameters('storageName')]"
                   },
                   "typeHandlerVersion": "1.5"
+                }
+              },
+              {
+                "name": "[concat(variables('vmssName'),'DSC')]",
+                "properties": {
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.9",
+                  "autoUpgradeMinorVersion": true,
+                  "forceUpdateTag": "1.0.0.0",
+                  "protectedSettings": {
+                    "Items": {
+                      "registrationKeyPrivate": "[parameters('registrationKey')]"
+                    }
+                  },
+                  "settings": {
+                    "ModulesUrl": "[parameters('modulesUrl')]",
+                    "SasToken": "",
+                    "ConfigurationFunction": "[parameters('configurationFunction')]",
+                    "Properties": [
+                      {
+                        "Name": "RegistrationKey",
+                        "Value": {
+                          "UserName": "PLACEHOLDER_DONOTUSE",
+                          "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                        },
+                        "TypeName": "System.Management.Automation.PSCredential"
+                      },
+                      {
+                        "Name": "RegistrationUrl",
+                        "Value": "[parameters('registrationUrl')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "NodeConfigurationName",
+                        "Value": "[parameters('nodeConfigurationName')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationMode",
+                        "Value": "ApplyAndMonitor",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationModeFrequencyMins",
+                        "Value": "15",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RefreshFrequencyMins",
+                        "Value": "30",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RebootNodeIfNeeded",
+                        "Value": true,
+                        "TypeName": "System.Boolean"
+                      },
+                      {
+                        "Name": "ActionAfterReboot",
+                        "Value": "ContinueConfiguration",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "AllowModuleOverwrite",
+                        "Value": false,
+                        "TypeName": "System.Boolean"
+                      }
+                    ]
+                  }
                 }
               }
             ]
