@@ -17,6 +17,9 @@
     "_assetLocation": {
       "value": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/runbooks/"
     },
+    "_repoURL": {
+      "value": "https://github.com/danielscholl/azure-functions.git"
+    },
     "adminUser": {
       "value": "<your_admin_user>"
     },

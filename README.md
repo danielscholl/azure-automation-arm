@@ -8,25 +8,30 @@ This repository is a sample solution deploying IaaS supported by OMS Automation 
 
 <b>The arm template requires 6 specific settings:</b>
 
-Create the required parameter file for deploying the Automation and Control Systems to the desired region.
+Copy the sample paramteters file required for deploying the Automation and Control system and edit it with the desired values.
+
+```bash
+cp templates/azuredeploy.parameters.json templates/params.json
+```
 
 Parameters (deployAzure.params.json)
 
 | Parameter               | Default             | Description                                    |
 | ----------------------- | ------------------- | ---------------------------------------------- |
+| _prefix_                | my                  | Your unique string (company prefix)            |
+| _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
 | _automationAccountName_ | automate            | Azure Automation Account Name                  |
 | _automationRegion_      | South Central US    | Azure Region for Automation to be located      |
-| _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
+| _assetLocation_         | * See Note 1 Below  | Source Control Location for Runbooks           |
+| _repoURL_               | * See Note 2 Below  | Source Control Location for Runbooks           |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
-| _assetLocation_         | * See Note 1 Below  | Source Control Location for Runbooks           |
-| _repoLocation_          | * See Note 2 Below  | Source Control Location for Runbooks           |
 
 <b>NOTE 1:</b> Runbooks are automatically uploaded from the directory runbooks.  The default location of this can be changed if desired. 
- 
- Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/runbooks/
 
- ARM template creation of the "RunAs" Account isn't possible.  2 Solutions exist to solve this problem and Option 1 is in place.
+Runbooks Location:  https://github.com/danielscholl/azure-automation-arm/runbooks
+ 
+Automatic ARM template creation of the "RunAs" Account isn't possible.  2 Solutions exist to solve this problem with Option 1 implemented.
 
  __Option 1__: The template automatically creates a schedule to run the runbook "bootstrap."  This uses Azure to run powershell
  commands and creates a temporary Key Vault to generate a certificate that then is used for the RunAs account.  In order
@@ -36,7 +41,7 @@ Parameters (deployAzure.params.json)
 
 <b>NOTE 2:</b> This ARM template uses an Azure Function to create unique GUIDs neecessary for job automation.
 
-Repo Location:  https://github.com/danielscholl/azure-functions
+Repo URL:  https://github.com/danielscholl/azure-functions
 
 In order to prevent having to submit a growing number of GUIDs via parameters, an Azure Function is utilized to
 creates a dynamic template with (x) number of GUIDs from a URL.
