@@ -1,4 +1,4 @@
-# Simple IaaS infrastructure for testing out DSC and Automation Activities
+# IaaS debug infrastructure for testing out DSC and Automation Activities
 
 These 2 templates reduce the complexity of the IaaS solution and deploy a simple VM or a simple VMSS solution to test and debug DSC and Automation Scenarios.
 
@@ -44,36 +44,36 @@ Parameters (deployAzure.params.json)
 
 __Simple VM Manual Deployment Instructions__
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FsimpleS%2FdeployVM.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVM.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name automate-simpleVM
+az group create --location southcentralus --name automate-vm
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/simple/deployVM.json --parameters templates/simple/params.json --resource-group automate-simpleVM
+az group deployment create --template-file templates/IaaSdebug/deployVM.json --parameters templates/IaaSdebug/params.json --resource-group automate-vm
 ```
 
 __Simple VMSS Manual Deployment Instructions__
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FsimpleS%2FdeployVMSS.json" target="_blank">
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVMSS.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name automate-simpleVMSS
+az group create --location southcentralus --name automate-vmss
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/simple/deployVMSS.json --parameters templates/simple/params.json --resource-group automate-simpleVMSS
+az group deployment create --template-file templates/IaaSdebug/deployVMSS.json --parameters templates/IaaSdebug/params.json --resource-group automate-vmss
 ```

@@ -1,0 +1,436 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique Parameter"
+      },
+      "defaultValue": "ccit"
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/24"
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/25"
+    },
+    "vmssName": {
+      "type": "string",
+      "minLength": 1,
+      "defaultValue": "winSet"
+    },
+    "instanceCount": {
+      "type": "int",
+      "metadata": {
+        "description": "Number of instances to deploy in the Scale Set."
+      },
+      "defaultValue": 2,
+      "minValue": 2
+    },
+    "adminUser": {
+      "type": "string",
+      "metadata": {
+        "description": "Linux servers admin user account name."
+      },
+      "defaultValue": "azureuser",
+      "minLength": 1
+    },
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": "Admin user account password."
+      }
+    },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
+    },
+    "registrationUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "registrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "nodeConfigurationName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node will be configured as"
+      }
+    },
+    "modulesUrl": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/UpdateLCMforAAPull.zip",
+      "metadata": {
+        "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+      }
+    }
+  },
+  "variables": {
+    "storageName": "[toLower( concat( parameters('prefix'), uniqueString(resourceGroup().id) ) )]",
+    "VNetName": "vnet",
+    "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
+    "SubNetId": "[concat(variables('VNetId'), '/subnets/', 'subnet')]",
+    "LBName": "[concat(parameters('prefix'), '-lb')]",
+    "LBId": "[resourceId('Microsoft.Network/loadBalancers/',variables('LBName'))]",
+    "PIPName": "[concat(variables('LBName'), '-ip')]",
+    "PIPId": "[resourceId('Microsoft.Network/publicIPAddresses/',variables('PIPName'))]",
+    "backendAddressPoolID": "[concat(variables('LBId'),'/backendAddressPools/','lbBackEnd')]",
+    "natRDPPoolID": "[concat(variables('LBId'),'/inboundNatPools/', 'RDP')]",
+    "natWinRMPoolID": "[concat(variables('LBId'),'/inboundNatPools/', 'WinRM')]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "WindowsVM Storage Account"
+      },
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "properties": {
+        "encryption": {
+          "keySource": "Microsoft.Storage",
+          "services": {
+            "blob": {
+              "enabled": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('PIPName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "comments": "## Virtual Network ##",
+      "name": "[variables('VNetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('VNetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "subnet",
+            "properties": {
+              "addressPrefix": "[parameters('SubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Load Balancer ##",
+      "name": "[variables('LBName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('LBName'), '-ip')]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "lbFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('PIPId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "lbBackEnd"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "lbrule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
+              },
+              "probe": {
+                "id": "[concat(variables('LBId'), '/probes/lbProbe')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 15
+            }
+          }
+        ],
+        "probes": [
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            },
+            "name": "lbProbe"
+          }
+        ],
+        "inboundNatPools": [
+          {
+            "name": "RDP",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": 50000,
+              "frontendPortRangeEnd": 50119,
+              "backendPort": 3389
+            }
+          },
+          {
+            "name": "WinRM",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": 51000,
+              "frontendPortRangeEnd": 51119,
+              "backendPort": 5896
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## VM Scale Set ##",
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "name": "[parameters('vmssName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-04-30-preview",
+      "tags": {
+        "displayName": "VM Scale Set"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/loadBalancers/', variables('lbName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('vnetName'))]"
+      ],
+      "sku": {
+        "name": "Standard_A1",
+        "tier": "Standard",
+        "capacity": "[parameters('instanceCount')]"
+      },
+      "properties": {
+        "overprovision": false,
+        "upgradePolicy": {
+          "mode": "Manual"
+        },
+        "virtualMachineProfile": {
+          "storageProfile": {
+            "osDisk": {
+              "createOption": "FromImage",
+              "caching": "ReadOnly"
+            },
+            "dataDisks": [],
+            "imageReference": {
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "2016-Datacenter",
+              "version": "latest"
+            }
+          },
+          "osProfile": {
+            "computerNamePrefix": "[parameters('prefix')]",
+            "adminUsername": "[parameters('adminUser')]",
+            "adminPassword": "[parameters('adminPassword')]"
+          },
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "[concat(parameters('vmssName'), '-nic')]",
+                "properties": {
+                  "primary": true,
+                  "ipConfigurations": [
+                    {
+                      "name": "ipconfig",
+                      "properties": {
+                        "subnet": {
+                          "id": "[variables('subnetId')]"
+                        },
+                        "loadBalancerBackendAddressPools": [
+                          {
+                            "id": "[variables('backendAddressPoolID')]"
+                          }
+                        ],
+                        "loadBalancerInboundNatPools": [
+                          {
+                            "id": "[variables('natRDPPoolID')]"
+                          },
+                          {
+                            "id": "[variables('natWinRMPoolID')]"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "diagnosticsProfile": {
+            "bootDiagnostics": {
+              "enabled": true,
+              "storageUri": "[concat('http://', variables('storageName'), '.blob.core.windows.net')]"
+            }
+          },
+          "extensionProfile": {
+            "extensions": [
+              {
+                "name": "[concat(parameters('vmssName'),'BGInfo')]",
+                "properties": {
+                  "publisher": "Microsoft.Compute",
+                  "type": "BGInfo",
+                  "typeHandlerVersion": "2.1",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {},
+                  "protectedSettings": null
+                }
+              },
+              {
+                "name": "[concat(parameters('vmssName'),'OMS')]",
+                "properties": {
+                  "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                  "type": "MicrosoftMonitoringAgent",
+                  "typeHandlerVersion": "1.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "workspaceId": "[parameters('omsId')]"
+                  },
+                  "protectedSettings": {
+                    "workspaceKey": "[parameters('omsKey')]"
+                  }
+                }
+              },
+              {
+                "name": "Microsoft.Powershell.DSC",
+                "properties": {
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.19",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "ModulesUrl": "[parameters('modulesUrl')]",
+                    "SasToken": "",
+                    "ConfigurationFunction": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
+                    "Properties": [
+                      {
+                        "Name": "RegistrationKey",
+                        "Value": {
+                          "UserName": "PLACEHOLDER_DONOTUSE",
+                          "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                        },
+                        "TypeName": "System.Management.Automation.PSCredential"
+                      },
+                      {
+                        "Name": "RegistrationUrl",
+                        "Value": "[parameters('registrationUrl')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "NodeConfigurationName",
+                        "Value": "[parameters('nodeConfigurationName')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationMode",
+                        "Value": "ApplyAndMonitor",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationModeFrequencyMins",
+                        "Value": "15",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RefreshFrequencyMins",
+                        "Value": "30",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RebootNodeIfNeeded",
+                        "Value": true,
+                        "TypeName": "System.Boolean"
+                      },
+                      {
+                        "Name": "ActionAfterReboot",
+                        "Value": "ContinueConfiguration",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "AllowModuleOverwrite",
+                        "Value": false,
+                        "TypeName": "System.Boolean"
+                      }
+                    ]
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "registrationKeyPrivate": "[parameters('registrationKey')]"
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

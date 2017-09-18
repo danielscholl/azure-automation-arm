@@ -1,0 +1,30 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "servicePrincipalAppId": {
+      "value": "<your_principal_id>"
+    },
+    "omsId": {
+      "value": "<your_workspace_id>"
+    },
+    "omsKey": {
+      "value": "<your_workspace_key>"
+    },
+    "adminUser": {
+      "value": "azureuser"
+    },
+    "adminPassword": {
+      "value": "<your_admin_password>"
+    },
+    "registrationUrl": {
+      "value": "<your_dsc_pullserver_url>"
+    },
+    "registrationKey": {
+      "value": "<your_dsc_pullserver_key>"
+    },
+    "nodeConfigurationName": {
+      "value": "Backend.Database"
+    }
+  }
+}

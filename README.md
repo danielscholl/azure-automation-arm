@@ -74,13 +74,13 @@ __Manual Deployment Instructions__
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name automate-demo
+az group create --location southcentralus --name automate-control
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/azuredeploy.json --parameters templates/azuredeploy.parameters.json --resource-group automate-demo
+az group deployment create --template-file templates/azuredeploy.json --parameters templates/params.json --resource-group automate-control
 ```
 
 
@@ -167,7 +167,7 @@ To get the OMS Workspace Id and Key the portal must be used.
 
 1. Go to the Microsoft Operations Management Suite
   - Connected Sources
-  - Windows SErvers
+  - Windows Servers
 
 ### Setup
 
@@ -180,13 +180,13 @@ __Manual Deployment Instructions__
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name automate-demo-iaas
+az group create --location southcentralus --name automate-iaas
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/IaaS/azuredeploy.json --parameters templates/IaaS/azuredeploy.parameters.json --resource-group automate-demo-iaas
+az group deployment create --template-file templates/IaaS/azuredeploy.json --parameters templates/IaaS/params.json --resource-group automate-iaas
 ```
 
 ### Infrastructure Solution Details
@@ -219,9 +219,9 @@ The IaaS Solution deploys and configures the following items.
 6. __Virtual Machines__
   - JumpServer on Manage Subnet
     - BGInfo Extension
-    - DSC Extension
     - Diagnostics Extension
-    - OMS Extension
+    - OMS Agent Configuration Extension
+    - DSC Extensionn
   - Public IP
   - Multiple Backend Servers
     - BGInfo Extension
