@@ -1,0 +1,268 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique Parameter"
+      },
+      "defaultValue": "ccit"
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/24"
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/25"
+    },
+    "servicePrincipalAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "Service Principal App ID (also called Client ID) that has contributor rights to the subscription used for this deployment."
+      }
+    }
+  },
+  "variables": {
+    "KeyVaultName": "[concat(parameters('prefix'), '-kv', uniqueString(resourceGroup().id))]",
+    "KeyVaultId": "[resourceId('Microsoft.KeyVault/vaults', variables('KeyVaultName'))]",
+    "storageName": "[toLower( concat( parameters('prefix'), uniqueString(resourceGroup().id)))]",
+    "storageId": "[resourceId('Microsoft.Storage/storageAccounts', variables('storageName'))]",
+    "VNetName": "[concat(parameters('prefix'), '-vnet')]",
+    "VNetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('VNetName'))]",
+    "SubNetName": "subnet",
+    "SubNetId": "[concat(variables('VNetId'), '/subnets/', variables('SubNetName'))]",
+    "LBName": "[concat(parameters('prefix'), '-lb')]",
+    "LBId": "[resourceId('Microsoft.Network/loadBalancers/',variables('LBName'))]",
+    "PIPName": "[concat(variables('LBName'), '-ip')]",
+    "PIPId": "[resourceId('Microsoft.Network/publicIPAddresses/',variables('PIPName'))]",
+    "backendAddressPoolID": "[concat(variables('LBId'),'/backendAddressPools/','lbBackEnd')]",
+    "natRDPPoolID": "[concat(variables('LBId'),'/inboundNatPools/', 'RDP')]",
+    "natWinRMPoolID": "[concat(variables('LBId'),'/inboundNatPools/', 'WinRM')]"
+  },
+  "resources": [
+    {
+      "comments": "## Key Vault ##",
+      "type": "Microsoft.KeyVault/vaults",
+      "name": "[variables('KeyVaultName')]",
+      "apiVersion": "2015-06-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "sku": {
+          "family": "A",
+          "name": "standard"
+        },
+        "tenantId": "[subscription().tenantId]",
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[parameters('servicePrincipalAppId')]",
+            "permissions": {
+              "keys": [
+                "all"
+              ],
+              "secrets": [
+                "all"
+              ]
+            }
+          }
+        ],
+        "enabledForDeployment": true,
+        "enabledForTemplateDeployment": true,
+        "enabledForVolumeEncryption": true
+      }
+    },
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[variables('storageName')]",
+      "apiVersion": "2016-01-01",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "WindowsVM Storage Account"
+      },
+      "kind": "Storage",
+      "sku": {
+        "name": "Standard_LRS",
+        "tier": "Standard"
+      },
+      "properties": {
+        "encryption": {
+          "keySource": "Microsoft.Storage",
+          "services": {
+            "blob": {
+              "enabled": true
+            }
+          }
+        }
+      }
+    },
+    {
+      "apiVersion": "2016-03-30",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('PIPName')]",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "PublicIPAddress"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic"
+      }
+    },
+    {
+      "comments": "## Virtual Network ##",
+      "name": "[variables('VNetName')]",
+      "type": "Microsoft.Network/virtualNetworks",
+      "apiVersion": "2016-03-30",
+      "location": "[resourceGroup().location]",
+      "tags": {
+        "displayName": "Virtual Network"
+      },
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('VNetPrefix')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "subnet",
+            "properties": {
+              "addressPrefix": "[parameters('SubnetPrefix')]"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "comments": "## Load Balancer ##",
+      "name": "[variables('LBName')]",
+      "type": "Microsoft.Network/loadBalancers",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('LBName'), '-ip')]"
+      ],
+      "properties": {
+        "frontendIPConfigurations": [
+          {
+            "name": "lbFrontEnd",
+            "properties": {
+              "publicIPAddress": {
+                "id": "[variables('PIPId')]"
+              }
+            }
+          }
+        ],
+        "backendAddressPools": [
+          {
+            "name": "lbBackEnd"
+          }
+        ],
+        "loadBalancingRules": [
+          {
+            "name": "lbrule",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "backendAddressPool": {
+                "id": "[concat(variables('LBId'), '/backendAddressPools/lbBackEnd')]"
+              },
+              "probe": {
+                "id": "[concat(variables('LBId'), '/probes/lbProbe')]"
+              },
+              "protocol": "Tcp",
+              "frontendPort": 80,
+              "backendPort": 80,
+              "enableFloatingIP": false,
+              "idleTimeoutInMinutes": 15
+            }
+          }
+        ],
+        "probes": [
+          {
+            "properties": {
+              "protocol": "Tcp",
+              "port": 80,
+              "intervalInSeconds": 15,
+              "numberOfProbes": 2
+            },
+            "name": "lbProbe"
+          }
+        ],
+        "inboundNatPools": [
+          {
+            "name": "RDP",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": 50000,
+              "frontendPortRangeEnd": 50119,
+              "backendPort": 3389
+            }
+          },
+          {
+            "name": "WinRM",
+            "properties": {
+              "frontendIPConfiguration": {
+                "id": "[concat(variables('LBId'), '/frontendIpConfigurations/lbFrontEnd')]"
+              },
+              "protocol": "tcp",
+              "frontendPortRangeStart": 51000,
+              "frontendPortRangeEnd": 51119,
+              "backendPort": 5896
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "outputs": {
+    "keyVault": {
+      "type": "object",
+      "value": {
+        "id": "[variables('KeyVaultId')]",
+        "name": "[variables('KeyVaultName')]"
+      }
+    },
+    "storageAccount": {
+      "type": "object",
+      "value": {
+        "id": "[variables('storageId')]",
+        "name": "[variables('storageName')]",
+        "key": "[listKeys(variables('storageId'), '2016-01-01').keys[0].value]"
+      }
+    },
+    "virtualNetwork": {
+      "type": "object",
+      "value": {
+        "id": "[variables('VNetId')]",
+        "name": "[variables('VNetName')]"
+      }
+    },
+    "subnets": {
+      "type": "object",
+      "value": {
+        "id": "[variables('SubNetId')]",
+        "name": "[variables('SubNetName')]"
+      }
+    },
+    "pools": {
+      "type": "object",
+      "value": {
+        "backend": "[variables('backendAddressPoolID')]",
+        "natRDP": "[variables('natRDPPoolID')]",
+        "natWinRM": "[variables('natWinRMPoolID')]"
+      }
+    }
+  }
+}

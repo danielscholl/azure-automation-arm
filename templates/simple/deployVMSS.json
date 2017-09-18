@@ -1,0 +1,63 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "prefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Unique Parameter"
+      },
+      "defaultValue": "ccit"
+    },
+    "vnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Virtual Network Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/24"
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "metadata": {
+        "description": "Subnet 1 Address Prefix CIDR"
+      },
+      "defaultValue": "10.1.0.0/25"
+    },
+    "servicePrincipalAppId": {
+      "type": "string",
+      "metadata": {
+        "description": "Service Principal App ID (also called Client ID) that has contributor rights to the subscription used for this deployment."
+      }
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "name": "TemplateCommon",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/simple/nested/', 'deployCommon.json')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "prefix": {
+            "value": "[parameters('prefix')]"
+          },
+          "vnetPrefix": {
+            "value": "[parameters('vnetPrefix')]"
+          },
+          "subnetPrefix": {
+            "value": "[parameters('subnetPrefix')]"
+          },
+          "servicePrincipalAppId": {
+            "value": "[parameters('servicePrincipalAppId')]"
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}
