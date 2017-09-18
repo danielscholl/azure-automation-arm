@@ -7,7 +7,7 @@
       "metadata": {
         "description": "Unique Parameter"
       },
-      "defaultValue": "ccit"
+      "defaultValue": "my"
     },
     "vnetPrefix": {
       "type": "string",
@@ -28,9 +28,61 @@
       "metadata": {
         "description": "Service Principal App ID (also called Client ID) that has contributor rights to the subscription used for this deployment."
       }
+    },
+    "adminUser": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "adminPassword": {
+      "type": "string",
+      "metadata": {
+        "description": ""
+      }
+    },
+    "omsId": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace ID"
+      }
+    },
+    "omsKey": {
+      "type": "string",
+      "metadata": {
+        "description": "OMS Workspace Key"
+      }
+    },
+    "modulesUrl": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/UpdateLCMforAAPull.zip",
+      "metadata": {
+        "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
+      }
+    },
+    "dscRegistrationUrl": {
+      "type": "string",
+      "metadata": {
+        "description": "Registration url of the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "dscRegistrationKey": {
+      "type": "securestring",
+      "metadata": {
+        "description": "Registration key to use to onboard to the Azure Automation DSC pull/reporting server"
+      }
+    },
+    "nodeConfigurationName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the node configuration, on the Azure Automation DSC pull server, that this node will be configured as"
+      },
+      "default": "Frontend.Web"
     }
   },
-  "variables": {},
+  "variables": {
+    "vmssName": "winset"
+  },
   "resources": [
     {
       "name": "TemplateCommon",
@@ -54,6 +106,188 @@
           },
           "servicePrincipalAppId": {
             "value": "[parameters('servicePrincipalAppId')]"
+          }
+        }
+      }
+    },
+    {
+      "comments": "## VM Scale Set ##",
+      "type": "Microsoft.Compute/virtualMachineScaleSets",
+      "name": "[variables('vmssName')]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "2016-04-30-preview",
+      "tags": {
+        "displayName": "VM Scale Set"
+      },
+      "dependsOn": [
+        "TemplateCommon"
+      ],
+      "sku": {
+        "name": "Standard_A1",
+        "tier": "Standard",
+        "capacity": 2
+      },
+      "properties": {
+        "overprovision": false,
+        "upgradePolicy": {
+          "mode": "Manual"
+        },
+        "virtualMachineProfile": {
+          "storageProfile": {
+            "osDisk": {
+              "createOption": "FromImage",
+              "caching": "ReadOnly"
+            },
+            "dataDisks": [],
+            "imageReference": {
+              "publisher": "MicrosoftWindowsServer",
+              "offer": "WindowsServer",
+              "sku": "2016-Datacenter",
+              "version": "latest"
+            }
+          },
+          "osProfile": {
+            "computerNamePrefix": "[parameters('prefix')]",
+            "adminUsername": "[parameters('adminUser')]",
+            "adminPassword": "[parameters('adminPassword')]"
+          },
+          "networkProfile": {
+            "networkInterfaceConfigurations": [
+              {
+                "name": "[concat(variables('vmssName'), '-nic')]",
+                "properties": {
+                  "primary": true,
+                  "ipConfigurations": [
+                    {
+                      "name": "ipconfig",
+                      "properties": {
+                        "subnet": {
+                          "id": "[reference('TemplateCommon').outputs.subnets.value.id]"
+                        },
+                        "loadBalancerBackendAddressPools": [
+                          {
+                            "id": "[reference('TemplateCommon').outputs.pools.value.backend]"
+                          }
+                        ],
+                        "loadBalancerInboundNatPools": [
+                          {
+                            "id": "[reference('TemplateCommon').outputs.pools.value.natRDP]"
+                          },
+                          {
+                            "id": "[reference('TemplateCommon').outputs.pools.value.natWinRM]"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          },
+          "diagnosticsProfile": {
+            "bootDiagnostics": {
+              "enabled": true,
+              "storageUri": "[concat('http://', reference('TemplateCommon').outputs.storageAccount.value.name, '.blob.core.windows.net')]"
+            }
+          },
+          "extensionProfile": {
+            "extensions": [
+              {
+                "name": "[concat(variables('vmssName'),'BGInfo')]",
+                "properties": {
+                  "publisher": "Microsoft.Compute",
+                  "type": "BGInfo",
+                  "typeHandlerVersion": "2.1",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {},
+                  "protectedSettings": {}
+                }
+              },
+              {
+                "name": "[concat(variables('vmssName'),'OMS')]",
+                "properties": {
+                  "publisher": "Microsoft.EnterpriseCloud.Monitoring",
+                  "type": "MicrosoftMonitoringAgent",
+                  "typeHandlerVersion": "1.0",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "workspaceId": "[parameters('omsId')]"
+                  },
+                  "protectedSettings": {
+                    "workspaceKey": "[parameters('omsKey')]"
+                  }
+                }
+              },
+              {
+                "name": "[concat(variables('vmssName'),'DSC')]",
+                "properties": {
+                  "publisher": "Microsoft.Powershell",
+                  "type": "DSC",
+                  "typeHandlerVersion": "2.19",
+                  "autoUpgradeMinorVersion": true,
+                  "settings": {
+                    "ModulesUrl": "[parameters('modulesUrl')]",
+                    "SasToken": "",
+                    "ConfigurationFunction": "UpdateLCMforAAPull.ps1\\ConfigureLCMforAAPull",
+                    "Properties": [
+                      {
+                        "Name": "RegistrationKey",
+                        "Value": {
+                          "UserName": "PLACEHOLDER_DONOTUSE",
+                          "Password": "PrivateSettingsRef:registrationKeyPrivate"
+                        },
+                        "TypeName": "System.Management.Automation.PSCredential"
+                      },
+                      {
+                        "Name": "RegistrationUrl",
+                        "Value": "[parameters('dscregistrationUrl')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "NodeConfigurationName",
+                        "Value": "[parameters('nodeConfigurationName')]",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationMode",
+                        "Value": "ApplyAndMonitor",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "ConfigurationModeFrequencyMins",
+                        "Value": "15",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RefreshFrequencyMins",
+                        "Value": "30",
+                        "TypeName": "System.Int32"
+                      },
+                      {
+                        "Name": "RebootNodeIfNeeded",
+                        "Value": true,
+                        "TypeName": "System.Boolean"
+                      },
+                      {
+                        "Name": "ActionAfterReboot",
+                        "Value": "ContinueConfiguration",
+                        "TypeName": "System.String"
+                      },
+                      {
+                        "Name": "AllowModuleOverwrite",
+                        "Value": false,
+                        "TypeName": "System.Boolean"
+                      }
+                    ]
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "registrationKeyPrivate": "[parameters('dscregistrationKey')]"
+                    }
+                  }
+                }
+              }
+            ]
           }
         }
       }

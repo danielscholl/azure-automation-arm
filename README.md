@@ -157,7 +157,7 @@ Parameters (deployAzure.params.json)
 | _omsKey_                  | _None_              | OMS Workspace Key                          |
 | _dscRegistrationUrl_      | _None_              | Automation Account DSC URL                 |
 | _dscRegistrationKey_      | _None_              | Automation Account Access Key              |
-| _scaleSetNodeConfig_      | Frontend.Web         | DSC Node Configuration Name                |
+| _scaleSetNodeConfig_      | Frontend.Web         | DSC Node Configuration Name               |
 
 The following cli command can be used to retrieve a service principal.
 
