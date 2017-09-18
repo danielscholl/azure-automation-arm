@@ -1,3 +1,5 @@
 .certs
 templates/**/*.params.json
 templates/**/params.json
+templates/vmIaaS
+templates/vmssIaaS
