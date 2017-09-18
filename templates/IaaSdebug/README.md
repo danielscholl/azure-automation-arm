@@ -20,7 +20,7 @@ These 2 templates reduce the complexity of the IaaS solution and deploy a simple
 These prerequisites are available only after successful creation and configuration of an Azure Automation and Control Account for Azure.
 
 
-### Prerequisite
+## Prerequisite
 
 Parameters (params.json)
 
@@ -41,7 +41,7 @@ Parameters (params.json)
 
 
 
-#### Deployment Instructions for a VM
+### Deployment Instructions for a VM
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVM.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
@@ -63,7 +63,7 @@ az group deployment create --template-file templates/IaaSdebug/deployVM.json --p
 
 
 
-#### Deployment Instructions for a VMSS
+### Deployment Instructions for a VMSS
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVMSS.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
