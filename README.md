@@ -14,7 +14,7 @@ Copy the sample paramteters file required for deploying the Automation and Contr
 cp templates/azuredeploy.parameters.json templates/params.json
 ```
 
-Parameters (deployAzure.params.json)
+Parameters (params.json)
 
 | Parameter               | Default             | Description                                    |
 | ----------------------- | ------------------- | ---------------------------------------------- |
@@ -136,7 +136,14 @@ The Automation and Control Solution deploys and configures the following items.
 
 ### Prerequisite
 
-Parameters (deployAzure.params.json)
+Copy the sample parameters file required for deploying the IaaS Solution and edit it with the desired values.
+
+```bash
+cp templates/IaaS/azuredeploy.parameters.json templates/IaaS/params.json
+```
+
+Parameters (params.json)
+
 
 | Parameter                 | Default             | Description                                |
 | ------------------------- | ------------------- | ------------------------------------------ |

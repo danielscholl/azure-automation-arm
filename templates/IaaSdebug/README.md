@@ -3,28 +3,26 @@
 These 2 templates reduce the complexity of the IaaS solution and deploy a simple VM or a simple VMSS solution to test and debug DSC Configurations and Automation Scenarios.
 
 
-<b>NOTE:</b> The template requires seven specific settings:
+<b>NOTE:</b> The template requires six specific settings:
 
 1. servicePrincipalAppId: This parameter is necessary to add values into the Key Vault. This value can be found by querying command line. `az ad user show --upn user@email.com --query objectId -otsv` 
 
-2. adminUser: This parameter, identifies the admin name applied to the machine(s), once it is onboarded
+2. adminPassword:  This parameter, identifies the admin password applied to the machine(s), once it is onboarded. 
 
-3. adminPassword:  This parameter, identifies the admin password applied to the machine(s), once it is onboarded. 
+3. omsId: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Id can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Workpace ID.
 
-4. omsId: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Id can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Workpace ID.
+4. omsKey: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Key can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Primary Key.
 
-5. omsKey: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Key can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Primary Key.
+5. dscRegistrationURL: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - URL. 
 
-6. dscRegistrationURL: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - URL. 
-
-7. dscRegistrationKey: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - Primary Access Key. 
+6. dscRegistrationKey: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - Primary Access Key. 
 
 These prerequisites are available only after successful creation and configuration of an Azure Automation and Control Account for Azure.
 
 
 ### Prerequisite
 
-Parameters (deployAzure.params.json)
+Parameters (params.json)
 
 | Parameter                 | Default                         | Description                                |
 | ------------------------- | ------------------------------- | ------------------------------------------ |
@@ -42,11 +40,14 @@ Parameters (deployAzure.params.json)
 | _nodeConfigurationName_   | _Backend.Database/Frontend.Web_ | DSC Node Configuration Name                |
 
 
-__Manual Deployment Instructions for a VM__
+
+__Portal Deployment Instructions__
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVM.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
+
+__Manual Deployment Instructions for a VM__
 
 1. __Create a Resource Group__
 

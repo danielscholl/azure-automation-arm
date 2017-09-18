@@ -1,16 +1,35 @@
 # Complex IaaS infrastructure for testing out DSC and Automation Activities
 
-<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaS%2Fazuredeploy.json" target="_blank">
-    <img src="http://azuredeploy.net/deploybutton.png"/>
-</a>
 
-This template configures a complex IaaS deployment and registers it into the OMS Management System
+This template installs a complex IaaS solution using the Automation and Control Solution.
 
+
+<b>NOTE:</b> The template requires six specific settings:
+
+1. servicePrincipalAppId: This parameter is necessary to add values into the Key Vault. This value can be found by querying command line. `az ad user show --upn user@email.com --query objectId -otsv` 
+
+2. adminPassword:  This parameter, identifies the admin password applied to the machine(s), once it is onboarded. 
+
+3. omsId: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Id can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Workpace ID.
+
+4. omsKey: This parameter, enables the onboarding of the VM OMS Agent to Azure Automation and Control. This specific Key can be found within the Azure Portal - OMS Portal - Settings - Connected Sources - Windows Servers - Primary Key.
+
+5. dscRegistrationURL: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - URL. 
+
+6. dscRegistrationKey: This parameter enables the DSC Extension and registration of the machine(s) as a DSC Node. This specific URL can be found within the Azure Portal - Automation Account - Account Settings - Keys - Primary Access Key. 
+
+These prerequisites are available only after successful creation and configuration of an Azure Automation and Control Account for Azure.
 
 
 ### Prerequisite
 
-Parameters (azuredeploy.params.json)
+Copy the sample parameters file required for deploying the IaaS Solution and edit it with the desired values.
+
+```bash
+cp templates/IaaS/azuredeploy.parameters.json templates/IaaS/params.json
+```
+
+Parameters (params.json)
 
 | Parameter                 | Default             | Description                                |
 | ------------------------- | ------------------- | ------------------------------------------ |
@@ -37,6 +56,15 @@ Parameters (azuredeploy.params.json)
 | _dscRegistrationUrl_      | _None_              | Automation Account DSC URL                 |
 | _dscRegistrationKey_      | _None_              | Automation Account Access Key              |
 | _scaleSetNodeConfig_      | Frontend.Web        | DSC Node Configuration Name                |
+| _vmNodeConfig_            | Backend.Database    | DSC Node Configuration Name                |
+
+
+
+__Portal Deploment Instructions__
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaS%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 
 
 __Manual Deployment Instructions__
