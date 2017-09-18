@@ -41,13 +41,13 @@ Parameters (params.json)
 
 
 
-__Portal Deployment Instructions__
+#### Deployment Instructions for a VM
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVM.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
 
-__Manual Deployment Instructions for a VM__
+__Manual Deployment Instructions__
 
 1. __Create a Resource Group__
 
@@ -61,11 +61,15 @@ az group create --location southcentralus --name automate-vm
 az group deployment create --template-file templates/IaaSdebug/deployVM.json --parameters templates/IaaSdebug/params.json --resource-group automate-vm
 ```
 
-__Manual Deployment Instructions for a VMSS__
+
+
+#### Deployment Instructions for a VMSS
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVMSS.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
 </a>
+
+__Manual Deployment Instructions__
 
 1. __Create a Resource Group__
 
