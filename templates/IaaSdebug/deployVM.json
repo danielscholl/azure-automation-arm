@@ -102,7 +102,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/simple/nested/', 'deployCommon.json')]",
+          "uri": "[concat('https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/templates/IaaSdebug/nested/', 'deployCommon.json')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {

@@ -1,6 +1,6 @@
-# IaaS debug infrastructure for testing out DSC and Automation Activities
+# Debug infrastructure for testing out DSC and Automation Activities
 
-These 2 templates reduce the complexity of the IaaS solution and deploy a simple VM or a simple VMSS solution to test and debug DSC and Automation Scenarios.
+These 2 templates reduce the complexity of the IaaS solution and deploy a simple VM or a simple VMSS solution to test and debug DSC Configurations and Automation Scenarios.
 
 
 <b>NOTE:</b> The template requires seven specific settings:
@@ -28,7 +28,7 @@ Parameters (deployAzure.params.json)
 
 | Parameter                 | Default                         | Description                                |
 | ------------------------- | ------------------------------- | ------------------------------------------ |
-| _prefix_                  | my                              | Your unique string (company prefix)        |
+| _prefix_                  | dbg                             | Your unique string (company prefix)        |
 | _vnetPrefix_              | 10.1.0.0/24                     | Virtual Network Address Space              |
 | _subnetPrefix_            | 10.1.0.0/25                     | Subnet Address Space                       |
 | _servicePrincipalAppId_   | _None_                          | Service Principal to access KeyVault       |
@@ -39,10 +39,10 @@ Parameters (deployAzure.params.json)
 | _modulesUrl_              | UpdateLCMforAAPull.zip          | OMS Workspace Key                          |
 | _dscRegistrationUrl_      | _None_                          | Automation Account DSC URL                 |
 | _dscRegistrationKey_      | _None_                          | Automation Account Access Key              |
-| _nodeConfigurationName_   | _Backend.Database/Frontend.Web  | DSC Node Configuration Name                |
+| _nodeConfigurationName_   | _Backend.Database/Frontend.Web_ | DSC Node Configuration Name                |
 
 
-__Simple VM Manual Deployment Instructions__
+__Manual Deployment Instructions for a VM__
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVM.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
@@ -60,7 +60,7 @@ az group create --location southcentralus --name automate-vm
 az group deployment create --template-file templates/IaaSdebug/deployVM.json --parameters templates/IaaSdebug/params.json --resource-group automate-vm
 ```
 
-__Simple VMSS Manual Deployment Instructions__
+__Manual Deployment Instructions for a VMSS__
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2Fdanielscholl%2Fmaster%2Fazure-automation-arm%2Ftemplates%2FIaaSdebug%2FdeployVMSS.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>

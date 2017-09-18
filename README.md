@@ -22,8 +22,8 @@ Parameters (deployAzure.params.json)
 | _omsWorkspaceRegion_    | East US             | Azure Region for OMS to be located             |
 | _automationAccountName_ | automate            | Azure Automation Account Name                  |
 | _automationRegion_      | South Central US    | Azure Region for Automation to be located      |
-| _assetLocation_         | * See Note 1 Below  | Source Control Location for Runbooks           |
-| _repoURL_               | * See Note 2 Below  | Source Control Location for Runbooks           |
+| _assetLocation_         | *See Note 1 Below  | Source Control Location for Runbooks           |
+| _repoURL_               | *See Note 2 Below  | Source Control Location for Runbooks           |
 | _adminUser_             | _None_              | Subscription Owner login name                  |
 | _adminPassword_         | _None_              | Subscription Owner login password              |
 
