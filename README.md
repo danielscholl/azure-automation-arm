@@ -6,7 +6,7 @@ This repository is a sample solution deploying IaaS supported by OMS Automation 
 
 ### Prerequisite
 
-<b>NOTE:</b> The arm template requires 6 specific settings:
+<b>The arm template requires 6 specific settings:</b>
 
 Create the required parameter file for deploying the Automation and Control Systems to the desired region.
 
@@ -22,11 +22,11 @@ Parameters (deployAzure.params.json)
 | _assetLocation_         | * See Note 1 Below  | Source Control Location for Runbooks           |
 | _repoLocation_          | * See Note 2 Below  | Source Control Location for Runbooks           |
 
-<b>NOTE:</b> Runbooks are automatically uploaded from the directory runbooks.  The default location of this can be changed if desired. 
+<b>NOTE 1:</b> Runbooks are automatically uploaded from the directory runbooks.  The default location of this can be changed if desired. 
  
- Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation/master/runbooks/
+ Asset Location: https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/runbooks/
 
- ARM template creation of the "RunAs" Account isn't possible.  2 Solutions exist to solve this problem.
+ ARM template creation of the "RunAs" Account isn't possible.  2 Solutions exist to solve this problem and Option 1 is in place.
 
  __Option 1__: The template automatically creates a schedule to run the runbook "bootstrap."  This uses Azure to run powershell
  commands and creates a temporary Key Vault to generate a certificate that then is used for the RunAs account.  In order
@@ -34,8 +34,7 @@ Parameters (deployAzure.params.json)
 
  __Option 2__: In order to manually create the Run As Account the script create-runas-account.ps1 can be run which will create the certificates on the local machine and then upload the certificates to the automation account.
 
-
-<b>NOTE:</b> This ARM template uses an Azure Function to create unique GUIDs neecessary for job automation.
+<b>NOTE 2:</b> This ARM template uses an Azure Function to create unique GUIDs neecessary for job automation.
 
 Repo Location:  https://github.com/danielscholl/azure-functions
 
@@ -74,13 +73,13 @@ __Manual Deployment Instructions__
 1. __Create a Resource Group__
 
 ```bash
-az group create --location southcentralus --name automate-control
+az group create --location southcentralus --name automate
 ```
 
 2. __Deploy Template to Resource Group__
 
 ```bash
-az group deployment create --template-file templates/azuredeploy.json --parameters templates/params.json --resource-group automate-control
+az group deployment create --template-file templates/azuredeploy.json --parameters templates/params.json --resource-group automate
 ```
 
 
@@ -124,7 +123,8 @@ The Automation and Control Solution deploys and configures the following items.
   - stop-machines
 
 6. __Automation Account DSC__
-  - webrolefull
+  - Backend.Database
+  - Frontend.Web
 
 
 ## IaaS Solution
@@ -157,7 +157,8 @@ Parameters (deployAzure.params.json)
 | _omsKey_                  | _None_              | OMS Workspace Key                          |
 | _dscRegistrationUrl_      | _None_              | Automation Account DSC URL                 |
 | _dscRegistrationKey_      | _None_              | Automation Account Access Key              |
-| _scaleSetNodeConfig_      | Frontend.Web         | DSC Node Configuration Name               |
+| _scaleSetNodeConfig_      | Frontend.Web        | DSC Node Configuration Name                |
+| _vmNodeConfig_            | Backend.Database    | DSC Node Configuration Name                |
 
 The following cli command can be used to retrieve a service principal.
 
@@ -228,10 +229,10 @@ The IaaS Solution deploys and configures the following items.
     - Diagnostics Extension
     - OMS Agent Configuration Extension
     - DSC Extension
+  - 2 Managed Data Disks
 
 7. __App Gateway__
   - Frontend Application Gateway
-  - WAF
   - Public IP
 
 8. __Virtual Machine Scale Set__
@@ -241,7 +242,6 @@ The IaaS Solution deploys and configures the following items.
     - OMS Agent Configuration Extension
     - DSC Extension
     
-
 
 ## Architecture
 
