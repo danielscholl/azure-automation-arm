@@ -81,7 +81,7 @@
     }
   },
   "variables": {
-    "vmssName": "winset"
+    "vmssName": "[concat(parameters('prefix'), '-winset')]"
   },
   "resources": [
     {

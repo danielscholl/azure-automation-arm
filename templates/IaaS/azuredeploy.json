@@ -91,7 +91,7 @@
       "metadata": {
         "description": "Server name."
       },
-      "defaultValue": "jumpserver",
+      "defaultValue": "vm-jump",
       "minLength": 2
     },
     "jumpserverSize": {
@@ -279,7 +279,7 @@
             "value": "[reference('TemplateVNet').outputs.securityGroups.value.remoteAccessId]"
           },
           "vmName": {
-            "value": "[parameters('jumpserverName')]"
+            "value": "[concat(parameters('prefix'), parameters('jumpserverName'))]"
           },
           "vmSize": {
             "value": "[parameters('jumpserverSize')]"
@@ -356,7 +356,7 @@
             "value": "[reference('TemplateLoadBalancer').outputs.loadBalancer.value.id]"
           },
           "vmName": {
-            "value": "[parameters('backendServerNamePrefix')]"
+            "value": "[concat(parameters('prefix'), parameters('backendServerNamePrefix'))]"
           },
           "vmSize": {
             "value": "[parameters('backendServerSize')]"

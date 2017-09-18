@@ -81,7 +81,7 @@
     }
   },
   "variables": {
-    "vmName": "winbox",
+    "vmName": "[concat(parameters('prefix'), '-winbox')]",
     "vmId": "[resourceId('Microsoft.Compute/virtualMachines', variables('vmName'))]",
     "publicIPName": "[concat(variables('vmName'), '-ip')]",
     "publicIPId": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPName'))]",
