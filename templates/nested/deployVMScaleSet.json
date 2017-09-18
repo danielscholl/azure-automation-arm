@@ -108,7 +108,7 @@
     },
     "modulesUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/danielscholl/azure-automation-arm/dsc/UpdateLCMforAAPull.zip",
+      "defaultValue": "https://raw.githubusercontent.com/danielscholl/azure-automation-arm/master/dsc/UpdateLCMforAAPull.zip",
       "metadata": {
         "description": "URL for the DSC configuration package. NOTE: Can be a Github url(raw) to the zip file (this is the default value)"
       }
@@ -135,10 +135,10 @@
       "comments": "## VM Scale Set ##",
       "type": "Microsoft.Compute/virtualMachineScaleSets",
       "name": "[variables('VMSSName')]",
-      "apiVersion": "2016-04-30-preview",
       "location": "[resourceGroup().location]",
+      "apiVersion": "2016-04-30-preview",
       "tags": {
-        "displayName": "Linux VM Scale Set"
+        "displayName": "VM Scale Set"
       },
       "dependsOn": [],
       "sku": {
@@ -147,7 +147,7 @@
         "capacity": "[parameters('instanceCount')]"
       },
       "properties": {
-        "overprovision": true,
+        "overprovision": false,
         "singlePlacementGroup": true,
         "upgradePolicy": {
           "mode": "Manual"
@@ -212,7 +212,7 @@
                   "typeHandlerVersion": "2.1",
                   "autoUpgradeMinorVersion": true,
                   "settings": {},
-                  "protectedSettings": null
+                  "protectedSettings": {}
                 }
               },
               {
@@ -231,21 +231,21 @@
                 }
               },
               {
-                "name": "[concat('VMDiagnosticsVmExt','_vmNodeType0Name')]",
+                "name": "[concat(variables('vmssName'),'Diag')]",
                 "properties": {
-                  "type": "IaaSDiagnostics",
-                  "autoUpgradeMinorVersion": true,
-                  "protectedSettings": {
-                    "storageAccountName": "[parameters('storageName')]",
-                    "storageAccountKey": "[parameters('storageKey')]",
-                    "storageAccountEndPoint": "https://core.windows.net"
-                  },
                   "publisher": "Microsoft.Azure.Diagnostics",
+                  "type": "IaaSDiagnostics",
+                  "typeHandlerVersion": "1.5",
+                  "autoUpgradeMinorVersion": true,
                   "settings": {
                     "xmlCfg": "[base64(concat(variables('wadcfgxstart'),variables('wadmetricsresourceid'),variables('wadcfgxend')))]",
                     "storageAccount": "[parameters('storageName')]"
                   },
-                  "typeHandlerVersion": "1.5"
+                  "protectedSettings": {
+                    "storageAccountName": "[parameters('storageName')]",
+                    "storageAccountKey": "[parameters('storageKey')]",
+                    "storageAccountEndPoint": "https://core.windows.net"
+                  }
                 }
               },
               {
@@ -256,11 +256,6 @@
                   "typeHandlerVersion": "2.9",
                   "autoUpgradeMinorVersion": true,
                   "forceUpdateTag": "1.0.0.0",
-                  "protectedSettings": {
-                    "Items": {
-                      "registrationKeyPrivate": "[parameters('registrationKey')]"
-                    }
-                  },
                   "settings": {
                     "ModulesUrl": "[parameters('modulesUrl')]",
                     "SasToken": "",
@@ -315,6 +310,11 @@
                         "TypeName": "System.Boolean"
                       }
                     ]
+                  },
+                  "protectedSettings": {
+                    "Items": {
+                      "registrationKeyPrivate": "[parameters('registrationKey')]"
+                    }
                   }
                 }
               }
